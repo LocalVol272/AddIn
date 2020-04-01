@@ -1,26 +1,32 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.Office.Tools.Ribbon;
-using ProjetVolSto.Struct;
-using ProjetVolSto.PricerObjects;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace ExcelAddIn1
 {
     public partial class Ribbon1
     {
-        private string _Country;
         private Worksheet _newWorksheet;
 
         private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
         {
-            List<string> res_string = new List<string>(){"us","fra"};
+            List<string> res_string = new List<string>(){"Call","Put"};
 
             foreach (string value in res_string)
             {
                 RibbonDropDownItem item = Globals.Factory.GetRibbonFactory().CreateRibbonDropDownItem();
                 item.Label = value;
-                comboBox1.Items.Add(item);
+                comboBox3.Items.Add(item);
+            }
+
+            List<string> tickers = new List<string>() { "AAPL", "AMZN", "FB", "GOOG" };
+
+            foreach (string value in tickers)
+            {
+                RibbonDropDownItem item = Globals.Factory.GetRibbonFactory().CreateRibbonDropDownItem();
+                item.Label = value;
+                comboBox2.Items.Add(item);
             }
         }
 
@@ -59,11 +65,7 @@ namespace ExcelAddIn1
             Config.Add("TYPE", "GET");*/
         }
 
-        private void comboBox1_TextChanged(object sender, RibbonControlEventArgs e)
-        {
-            _Country = comboBox1.Text;
-            FillTicker(_Country);
-        }
+
 
         private void FillTicker(string country)
         {
@@ -73,8 +75,8 @@ namespace ExcelAddIn1
                 case "us":
                     Stock action = new Stock();
                     action.Token = new Token("Tsk_bbe66f58b6d149f59a9af4eb83bfc7f5");
-                    List<Ticker> res = action.GetAllTickers(country);
-                    res_string = res.ToListString();
+                    //List<Ticker> res = action.GetAllTickers(country);
+                    //res_string = res.ToListString();
                     break;
             }
 
@@ -89,7 +91,47 @@ namespace ExcelAddIn1
 
         private void comboBox2_TextChanged(object sender, RibbonControlEventArgs e)
         {
-            _newWorksheet.Range["B4"].Value = comboBox2.Text;
+
+            _newWorksheet.Range["B1"].Value = comboBox2.Text;
+        }
+
+        private void comboBox3_TextChanged(object sender, RibbonControlEventArgs e)
+        {
+            _newWorksheet.Range["B3"].Value = comboBox3.Text;
+        }
+
+        private void button4_Click(object sender, RibbonControlEventArgs e)
+        {
+            Globals.ThisAddIn.Application.ScreenUpdating = false;
+            string ticker = comboBox2.Text;
+            //DL data
+            int[] strike_ex = new int[11];
+            double[] tenor_ex = new double[11];
+            double[,] price_ex = new double[strike_ex.Length,tenor_ex.Length];
+            int s = 150;
+            double t = 0.25;
+            for(int i = 0; i< strike_ex.Length; i++)
+            {
+                strike_ex[i] = s;
+                tenor_ex[i] = t;
+                s += 10;
+                t += 0.25;
+                int c = 10;
+                for (int j = 0; j < tenor_ex.Length; j++)
+                {
+                    c += 2;
+                    price_ex[i, j] = s * t + c;
+                }
+            }
+
+            _newWorksheet.Range["B6"].Value = "Option Market Price";
+            _newWorksheet.Range["B6"].Font.FontStyle = "Bold";
+            _newWorksheet.Range["B6"].Font.Underline = true;
+
+            GridView _gv = new GridView(_newWorksheet, strike_ex, tenor_ex);
+            _gv.DisplayGrid(7, 3, price_ex);
+
+            Globals.ThisAddIn.Application.ScreenUpdating = true;
         }
     }
 }
