@@ -30,10 +30,10 @@
     <DefineConstants>VSTO40</DefineConstants>
     <IsWebBootstrapper>False</IsWebBootstrapper>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <PublishUrl>C:\Users\aniss\Desktop\</PublishUrl>
+    <PublishUrl>C:\Users\becks\Desktop\</PublishUrl>
     <InstallUrl />
     <TargetCulture>fr</TargetCulture>
-    <ApplicationVersion>1.0.0.11</ApplicationVersion>
+    <ApplicationVersion>1.0.0.10</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -191,19 +191,19 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="NewWorksheet.cs" />
+    <Compile Include="GridView.cs" />
+    <Compile Include="PricerObjects\Authentification.cs" />
     <Compile Include="PricerObjects\DataLoader.cs" />
     <Compile Include="PricerObjects\DataloaderErrors.cs" />
     <Compile Include="PricerObjects\DateFormat.cs" />
-    <Compile Include="PricerObjects\IEXAuthentification.cs" />
-    <Compile Include="PricerObjects\IEXCloud.cs" />
     <Compile Include="PricerObjects\Logger.cs" />
+    <Compile Include="NewWorksheet.cs" />
     <Compile Include="PricerObjects\Option.cs" />
     <Compile Include="PricerObjects\Options.cs" />
-    <Compile Include="PricerObjects\Request.cs" />
     <Compile Include="PricerObjects\RequestErrors.cs" />
     <Compile Include="PricerObjects\Security.cs" />
     <Compile Include="PricerObjects\Stock.cs" />
+    <Compile Include="PricerObjects\YahooCloud.cs" />
     <Compile Include="PricingCalculation\CubicSplines.cs" />
     <Compile Include="PricingCalculation\Grid.cs" />
     <Compile Include="PricingCalculation\Matrix.cs" />
@@ -223,6 +223,7 @@
     <EmbeddedResource Include="Ribbon1.resx">
       <DependentUpon>Ribbon1.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="ExcelAddIn1_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -232,6 +233,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="PricerObjects\Request.cs" />
     <Compile Include="Ribbon1.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -255,10 +257,17 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <PropertyGroup>
-    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>5E8C0899D1D07305054099916564739357D17D21</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
