@@ -1,19 +1,19 @@
 using System;
 using System.Collections.Generic;
 using ExcelAddIn1.PricerObjects;
+using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Tools.Ribbon;
-using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace ExcelAddIn1
 {
     public partial class Ribbon1
     {
-        private Worksheet _newWorksheet;
         private int _lastRow;
+        private Worksheet _newWorksheet;
 
         private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
         {
-            var resString = new List<string>() {"Call", "Put"};
+            var resString = new List<string> {"Call", "Put"};
 
             foreach (var value in resString)
             {
@@ -22,7 +22,7 @@ namespace ExcelAddIn1
                 comboBox3.Items.Add(item);
             }
 
-            var tickers = new List<string>() {"AAPL", "AMZN", "FB", "GOOG"};
+            var tickers = new List<string> {"AAPL", "AMZN", "FB", "GOOG"};
 
             foreach (var value in tickers)
             {
@@ -71,25 +71,26 @@ namespace ExcelAddIn1
             _newWorksheet.Range["B" + _lastRow].Font.FontStyle = "Bold";
             _newWorksheet.Range["B" + _lastRow].Font.Underline = true;
             //DL data
-            int[] strike_ex = new int[11];
-            double[] tenor_ex = new double[11];
-            double[,] price_ex = new double[strike_ex.Length, tenor_ex.Length];
-            int s = 150;
-            double t = 0.25;
-            for (int i = 0; i < strike_ex.Length; i++)
+            var strike_ex = new int[11];
+            var tenor_ex = new double[11];
+            var price_ex = new double[strike_ex.Length, tenor_ex.Length];
+            var s = 150;
+            var t = 0.25;
+            for (var i = 0; i < strike_ex.Length; i++)
             {
                 strike_ex[i] = s;
                 tenor_ex[i] = t;
                 s += 10;
                 t += 0.25;
-                int c = 10;
-                for (int j = 0; j < tenor_ex.Length; j++)
+                var c = 10;
+                for (var j = 0; j < tenor_ex.Length; j++)
                 {
                     c += 2;
                     price_ex[i, j] = s * t + c;
                 }
             }
-            GridView gv = new GridView(_newWorksheet, strike_ex, tenor_ex);
+
+            var gv = new GridView(_newWorksheet, strike_ex, tenor_ex);
             gv.DisplayGrid(_lastRow + 1, 3, price_ex);
             gv.DisplayVolSurface("Volatility Surface", _lastRow + 2, 4);
             _lastRow += strike_ex.Length + 2;
@@ -133,6 +134,9 @@ namespace ExcelAddIn1
         {
             Globals.ThisAddIn.Application.ScreenUpdating = false;
             var ticker = comboBox2.Text;
+            var action = new Stock(ticker);
+            action.Token = new Token("Tsk_bbe66f58b6d149f59a9af4eb83bfc7f5");
+            _newWorksheet.Range["B2"].Value = action.GetLastPrice();
             //DL data
             var strike_ex = new int[11];
             var tenor_ex = new double[11];
@@ -168,30 +172,31 @@ namespace ExcelAddIn1
         {
             Globals.ThisAddIn.Application.ScreenUpdating = false;
             //DL data
-            int[] strike_ex = new int[11];
-            double[] tenor_ex = new double[11];
-            double[,] price_ex = new double[strike_ex.Length, tenor_ex.Length];
-            int s = 150;
-            double t = 0.25;
-            for (int i = 0; i < strike_ex.Length; i++)
+            var strike_ex = new int[11];
+            var tenor_ex = new double[11];
+            var price_ex = new double[strike_ex.Length, tenor_ex.Length];
+            var s = 150;
+            var t = 0.25;
+            for (var i = 0; i < strike_ex.Length; i++)
             {
                 strike_ex[i] = s;
                 tenor_ex[i] = t;
                 s += 10;
                 t += 0.25;
-                int c = 10;
-                for (int j = 0; j < tenor_ex.Length; j++)
+                var c = 10;
+                for (var j = 0; j < tenor_ex.Length; j++)
                 {
                     c += 2;
                     price_ex[i, j] = s * t + c;
                 }
             }
+
             _lastRow += 3;
             _newWorksheet.Range["B" + _lastRow].Value = "Option Price with Local Volatility";
             _newWorksheet.Range["B" + _lastRow].Font.FontStyle = "Bold";
             _newWorksheet.Range["B" + _lastRow].Font.Underline = true;
 
-            GridView gv = new GridView(_newWorksheet, strike_ex, tenor_ex);
+            var gv = new GridView(_newWorksheet, strike_ex, tenor_ex);
             gv.DisplayGrid(_lastRow + 1, 3, price_ex);
 
 

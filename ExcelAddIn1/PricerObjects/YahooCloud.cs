@@ -16,7 +16,7 @@ namespace ExcelAddIn1.PricerObjects
 
     internal interface IYahooResponse
     {
-        IEXRequest Read();
+        YahooRequest Read();
     }
 
     internal interface IYahooApiResponse : IYahooResponse

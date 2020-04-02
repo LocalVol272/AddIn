@@ -46,8 +46,7 @@ namespace ExcelAddIn1.PricerObjects
             // this method will execute the request with proper config
             if (Request.RequestContent.Type == "GET")
                 return await Request.Get();
-            else
-                return await Request.Get();
+            return await Request.Get();
         }
     }
 }

@@ -7,14 +7,25 @@ namespace ExcelAddIn1.PricerObjects
 {
     internal class ApiRequest : HttpRequest, IYahooRequest, IAuthentification
     {
+        private readonly Dictionary<string, object> config;
+        private YahooRequest request;
         protected Token token;
-        private IEXRequest request;
-        private Dictionary<string, object> config;
 
-        Token IYahooRequest.Token
+        public ApiRequest()
         {
-            get => token;
-            set => token = value;
+            ;
+        }
+
+        public ApiRequest(Dictionary<string, object> config)
+        {
+            this.config = config;
+            token = GetToken(config);
+        }
+
+        public YahooRequest RequestContent
+        {
+            get => request;
+            set => request = value;
         }
 
         Token IAuthentification.Token
@@ -23,18 +34,32 @@ namespace ExcelAddIn1.PricerObjects
             set => token = value;
         }
 
-        public IEXRequest RequestContent
+        public bool Authentification(Token token)
         {
-            get => request;
-            set => request = value;
+            throw new NotImplementedException();
         }
 
-        public override void Get(IEXRequest Request)
+
+        public Token GetToken(Dictionary<string, object> config)
+        {
+            var Token = "Token";
+
+            if (config.ContainsKey(Token)) return new Token(config[Token].ToString());
+            throw new Exception(string.Format(ConfigError.MissingKey, Token));
+        }
+
+        Token IYahooRequest.Token
+        {
+            get => token;
+            set => token = value;
+        }
+
+        public override void Get(YahooRequest Request)
         {
             throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
         }
 
-        public override void Post(IEXRequest Request)
+        public override void Post(YahooRequest Request)
         {
             throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
         }
@@ -67,31 +92,6 @@ namespace ExcelAddIn1.PricerObjects
         public override Task<string> Post(string url, HttpContent requestContent)
         {
             throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
-        }
-
-        public bool Authentification(Token token)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ApiRequest()
-        {
-            ;
-        }
-
-        public ApiRequest(Dictionary<string, object> config)
-        {
-            this.config = config;
-            token = GetToken(config);
-        }
-
-
-        public Token GetToken(Dictionary<string, object> config)
-        {
-            var Token = "Token";
-
-            if (config.ContainsKey(Token)) return new Token(config[Token].ToString());
-            throw new Exception(string.Format(ConfigError.MissingKey, Token));
         }
 
         public void BuildRequest()
@@ -148,6 +148,7 @@ namespace ExcelAddIn1.PricerObjects
             ;
         }
 
+
         private void UnWrapParams()
         {
             request.Params["Dates"] = (List<string>) request.Params["Dates"];
@@ -185,6 +186,7 @@ namespace ExcelAddIn1.PricerObjects
                 throw new Exception(string.Format(ConfigError.MissingKey, productType));
             }
         }
+
 
         public override async Task<string> Post()
         {

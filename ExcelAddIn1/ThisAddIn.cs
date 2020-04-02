@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
-using Excel = Microsoft.Office.Interop.Excel;
 using Office = Microsoft.Office.Core;
-using Microsoft.Office.Tools.Excel;
 
 namespace ExcelAddIn1
 {
@@ -22,13 +16,13 @@ namespace ExcelAddIn1
         #region Code généré par VSTO
 
         /// <summary>
-        /// Méthode requise pour la prise en charge du concepteur - ne modifiez pas
-        /// le contenu de cette méthode avec l'éditeur de code.
+        ///     Méthode requise pour la prise en charge du concepteur - ne modifiez pas
+        ///     le contenu de cette méthode avec l'éditeur de code.
         /// </summary>
         private void InternalStartup()
         {
-            Startup += new EventHandler(ThisAddIn_Startup);
-            Shutdown += new EventHandler(ThisAddIn_Shutdown);
+            Startup += ThisAddIn_Startup;
+            Shutdown += ThisAddIn_Shutdown;
         }
 
         #endregion

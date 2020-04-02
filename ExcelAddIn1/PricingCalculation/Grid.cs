@@ -6,16 +6,6 @@ namespace ExcelAddIn1.PricingCalculation
     internal class Grid
     {
         private readonly double[,] prices;
-        public int nbRows { get; }
-        public int nbCols { get; }
-        public double[] tenors { get; }
-        public double[] strikes { get; }
-
-        public double this[int i, int j]
-        {
-            get => prices[i, j];
-            set => prices[i, j] = value;
-        }
 
         public Grid(double?[,] source, double[] tenors, double[] strikes)
         {
@@ -29,6 +19,17 @@ namespace ExcelAddIn1.PricingCalculation
                 throw new Exception($"Cannot build Grid, dimension error :\n\tA : {nbCols}x{tenors.Length}");
             if (nbRows != strikes.Length)
                 throw new Exception($"Cannot build Grid, dimension error :\n\tA : {nbRows}x{strikes.Length}");
+        }
+
+        public int nbRows { get; }
+        public int nbCols { get; }
+        public double[] tenors { get; }
+        public double[] strikes { get; }
+
+        public double this[int i, int j]
+        {
+            get => prices[i, j];
+            set => prices[i, j] = value;
         }
 
         private double[,] RemoveHoles(double?[,] source)

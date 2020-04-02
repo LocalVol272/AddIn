@@ -101,18 +101,18 @@ namespace ExcelAddIn1
 
         public void DisplayVolSurface(string title, int rowIndexDataSource, int columnIndexDataSource)
         {
-            Shape VolSurfShape = _worksheet.Shapes.AddChart2(Width: 600, Height: 300);
-            Chart VolSurf = VolSurfShape.Chart;
+            var VolSurfShape = _worksheet.Shapes.AddChart2(Width: 600, Height: 300);
+            var VolSurf = VolSurfShape.Chart;
             VolSurf.HasTitle = true;
             VolSurf.ChartTitle.Text = title;
             Range _cell1 = _worksheet.Cells[rowIndexDataSource, columnIndexDataSource];
-            Range _cell2 = _worksheet.Cells[rowIndexDataSource + _strikes.Length, columnIndexDataSource + _tenors.Length];
+            Range _cell2 = _worksheet.Cells[rowIndexDataSource + _strikes.Length,
+                columnIndexDataSource + _tenors.Length];
             VolSurf.SetSourceData(_worksheet.Range[_cell1, _cell2]);
             VolSurf.ChartType = XlChartType.xlSurface;
             VolSurf.ChartStyle = 311;
             VolSurf.ChartColor = 21;
             VolSurf.Location(XlChartLocation.xlLocationAsNewSheet, "Volatility Surface");
-
         }
     }
 }

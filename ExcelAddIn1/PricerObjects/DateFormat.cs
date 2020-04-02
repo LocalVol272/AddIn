@@ -5,26 +5,6 @@ namespace ExcelAddIn1.PricerObjects
 {
     internal class Date : IYahooDateFormat
     {
-        private int day, month, year;
-
-        public int Day
-        {
-            get => day;
-            set => day = value;
-        }
-
-        public int Month
-        {
-            get => month;
-            set => month = value;
-        }
-
-        public int Year
-        {
-            get => year;
-            set => year = value;
-        }
-
         public Date(int year, int month, [Optional] int day)
         {
             Year = year;
@@ -51,6 +31,12 @@ namespace ExcelAddIn1.PricerObjects
                 throw new Exception(DataLoaderError.DateFormatError);
             }
         }
+
+        public int Day { get; set; }
+
+        public int Month { get; set; }
+
+        public int Year { get; set; }
 
 
         public double ToTimeStamp()

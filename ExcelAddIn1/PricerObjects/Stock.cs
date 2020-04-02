@@ -8,11 +8,6 @@ using Newtonsoft.Json;
 
 namespace ExcelAddIn1.PricerObjects
 {
-    public class StockPrice
-    {
-    }
-
-
     public static class TickerFormat
     {
         public static List<string> ToListString(this List<Ticker> list)
@@ -25,8 +20,8 @@ namespace ExcelAddIn1.PricerObjects
 
     internal class Stock : DataLoader, IAuthentification
     {
-        private IEXRequest _requestContent;
-
+        private YahooRequest _requestContent;
+        private readonly string _ticker;
         private new HttpsRequest request;
         private string url;
 
@@ -42,14 +37,14 @@ namespace ExcelAddIn1.PricerObjects
             _request = new ApiRequest();
         }
 
-        public Stock(Token token)
+        public Stock(string ticker)
         {
-            Token = token;
+            _ticker = ticker;
         }
 
         private string Reponse { get; set; }
 
-        public IEXRequest RequestContent
+        public YahooRequest RequestContent
         {
             get => _requestContent;
             set => RequestContent = _requestContent;
@@ -73,6 +68,7 @@ namespace ExcelAddIn1.PricerObjects
             return true;
         }
 
+
         public Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>> GetAllTickers(string country)
         {
             string[] args = {country};
@@ -86,11 +82,29 @@ namespace ExcelAddIn1.PricerObjects
         }
 
 
-        public static List<string> GetAllTickers()
+        public double GetLastPrice()
         {
-            return AvailableData.GetTicker();
+            var yesterday = DateTime.Now.Date.Subtract(TimeSpan.FromDays(1)).ConvertToTimestamp().ToString();
+            var today = DateTime.Now.ConvertToTimestamp().ToString();
+            string[] args = {_ticker, yesterday, today};
+            var stack = new StackTrace();
+            var root = stack.GetFrame(0).GetMethod().Name;
+            Init(args, root);
+            GetReponse();
+            var historicalData = JsonConvert.DeserializeObject<YahooChartObject>(Reponse);
+            var HistoPrices = historicalData.chart.result[0].indicators.adjclose[0].adjclose;
+
+            return (double) HistoPrices[HistoPrices.Count - 1];
         }
 
+        public static List<string> GetAllTickers()
+        {
+            return AvailableData.Ticker;
+        }
+
+        private void FormatTickers()
+        {
+        }
 
         private void GetReponse()
         {
@@ -111,27 +125,39 @@ namespace ExcelAddIn1.PricerObjects
             return await request.Get(url);
         }
 
+
         private async Task<string> ExecuteRequest(string url, HttpContent requestContent)
         {
             return await request.Post(url, requestContent);
         }
 
+
         private void BuildUrl(string root, [Optional] string[] args)
         {
             switch (root)
             {
-                case "GetAllTickers":
-                    url = "https://query1.finance.yahoo.com/v7/finance/options/MSFT";
+                case "GetLastPrice":
+                    url = string.Format(ApiMapping.Roots[root], args[0], args[1], args[2]);
+
+
                     break;
             }
         }
+
 
         private void InitRequest()
         {
             if (Authentification(Token))
             {
+                switch (Request)
+                {
+                    case null:
+                        Request = new ApiRequest();
+                        break;
+                }
+
                 request = new HttpsRequest();
-                Request.RequestContent = new IEXRequest();
+                Request.RequestContent = new YahooRequest();
             }
         }
     }

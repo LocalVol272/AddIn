@@ -6,14 +6,6 @@ namespace ExcelAddIn1.PricingCalculation
     public abstract class Matrix<T>
     {
         private readonly T[,] data;
-        public int nbRows { get; }
-        public int nbCols { get; }
-
-        public T this[int i, int j]
-        {
-            get => data[i, j];
-            set => data[i, j] = value;
-        }
 
         protected Matrix(int n) : this(n, n)
         {
@@ -43,6 +35,15 @@ namespace ExcelAddIn1.PricingCalculation
             nbCols = n;
             data = new T[m, n];
             Fill(x);
+        }
+
+        public int nbRows { get; }
+        public int nbCols { get; }
+
+        public T this[int i, int j]
+        {
+            get => data[i, j];
+            set => data[i, j] = value;
         }
 
         public void Fill(T x)

@@ -4,6 +4,9 @@ namespace ExcelAddIn1.PricingCalculation
 {
     public class CubicSpline
     {
+        //last checked index, for estimation
+        private int _previousI;
+
         // n-1 spline coefficients for n points
         private double[] a;
         private double[] b;
@@ -11,9 +14,6 @@ namespace ExcelAddIn1.PricingCalculation
         // Initial x and y 
         private double[] xInit;
         private double[] yInit;
-
-        //last checked index, for estimation
-        private int _previousI = 0;
 
         // Default constructor
         public CubicSpline()
@@ -151,7 +151,6 @@ namespace ExcelAddIn1.PricingCalculation
                 r[n - 1] = endSlope;
             }
 
-            
 
             //==================================================================
             //==================================================================
@@ -159,7 +158,7 @@ namespace ExcelAddIn1.PricingCalculation
             //==================================================================
             //Thomas algoithm===================================================
             var md = new MatrixDecomposition(m);
-            if (debug) Console.WriteLine("Matrix:\n{0}", md.ToString());
+            if (debug) Console.WriteLine("Matrix:\n{0}", md);
             var k = md.ThomasAlgorithm(r);
             //==================================================================
             // we want k, the solution to the matrix
@@ -232,6 +231,7 @@ namespace ExcelAddIn1.PricingCalculation
 
             return retSlopes;
         }
+
         public double SpotEstimateSlope(double x, bool debug = false)
         {
             //first check if fitted :
@@ -243,19 +243,19 @@ namespace ExcelAddIn1.PricingCalculation
             _previousI = 0; //for multiple estimations, set to 0 at each eval
 
 
-                // Find which spline can be used to compute this x (by simultaneous traverse)
-                int j = _NextI(x);
+            // Find which spline can be used to compute this x (by simultaneous traverse)
+            var j = _NextI(x);
 
-                // Estimate at j spline
-                double dx = xInit[j + 1] - xInit[j];
-                double dy = yInit[j + 1] - yInit[j];
-                double t = (x - xInit[j]) / dx;
+            // Estimate at j spline
+            var dx = xInit[j + 1] - xInit[j];
+            var dy = yInit[j + 1] - yInit[j];
+            var t = (x - xInit[j]) / dx;
 
 
-                retSlope = dy / dx + (1 - 2 * t) * (a[j] * (1 - t) + b[j] * t) / dx + t * (1 - t) * (b[j] - a[j]) / dx;
+            retSlope = dy / dx + (1 - 2 * t) * (a[j] * (1 - t) + b[j] * t) / dx + t * (1 - t) * (b[j] - a[j]) / dx;
 
-                if (debug) Console.WriteLine("[{0}]: xs = {1}, j = {2}, t = {3}",  x, j, t);
-            
+            if (debug) Console.WriteLine("[{0}]: xs = {1}, j = {2}, t = {3}", x, j, t);
+
 
             return retSlope;
         }
@@ -272,17 +272,17 @@ namespace ExcelAddIn1.PricingCalculation
             _previousI = 0; //for multiple estimations, set to 0 at each eval
 
 
-                // Find which spline can be used to compute this x (by simultaneous traverse)
-                int j = _NextI(x);
+            // Find which spline can be used to compute this x (by simultaneous traverse)
+            var j = _NextI(x);
 
-                // Estimate at j spline
-                double dx = xInit[j + 1] - xInit[j];
-                double t = (x - xInit[j]) / dx;
+            // Estimate at j spline
+            var dx = xInit[j + 1] - xInit[j];
+            var t = (x - xInit[j]) / dx;
 
-                retSecDer = 2 * (b[j] - 2 * a[j] + (a[j] - b[j]) * 3 * t) / (dx * dx);
+            retSecDer = 2 * (b[j] - 2 * a[j] + (a[j] - b[j]) * 3 * t) / (dx * dx);
 
-                if (debug) Console.WriteLine("[{0}]: xs = {1}, j = {2}, t = {3}",  x, j, t);
-            
+            if (debug) Console.WriteLine("[{0}]: xs = {1}, j = {2}, t = {3}", x, j, t);
+
 
             return retSecDer;
         }

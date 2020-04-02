@@ -10,15 +10,7 @@ namespace ExcelAddIn1.PricerObjects
 {
     internal class Options : DataLoader, IAuthentification
     {
-        private Token _token;
         private string url;
-        private string _response;
-
-        private string Reponse
-        {
-            get => _response;
-            set => _response = value;
-        }
 
         public Options()
         {
@@ -28,12 +20,6 @@ namespace ExcelAddIn1.PricerObjects
         public Options(Token token)
         {
             Token = token;
-        }
-
-        public Token Token
-        {
-            get => _token;
-            set => _token = value;
         }
 
         public Options(Dictionary<string, object> config)
@@ -50,12 +36,15 @@ namespace ExcelAddIn1.PricerObjects
             }
         }
 
+        private string Reponse { get; set; }
+
+        public Token Token { get; set; }
+
         public bool Authentification(Token token)
         {
             if (token.value is null)
                 throw new Exception(ConfigError.MissingTokenValue);
-            else
-                return true;
+            return true;
         }
 
 
@@ -88,22 +77,22 @@ namespace ExcelAddIn1.PricerObjects
                 {
                     string[] args = {ticker, dte};
                     BuilUrl(root, args);
-                    _response = ExecuteRequest(url)
+                    Reponse = ExecuteRequest(url)
                         .GetAwaiter()
                         .GetResult();
 
-                    switch (_response)
+                    switch (Reponse)
                     {
                         case "NotFound":
                             break;
                         default:
-                            var str_date = UniversalDateTime.ConvertFromTimestampToString(double.Parse(dte));
+                            var str_date = double.Parse(dte).ConvertFromTimestampToString();
                             tempOptionByDates.Add(str_date,
                                 FormatOption(
                                     JsonConvert
                                         .DeserializeObject<
                                             Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>>>(
-                                            _response), ticker, str_date));
+                                            Reponse), ticker, str_date));
                             break;
                     }
                 }
@@ -130,8 +119,7 @@ namespace ExcelAddIn1.PricerObjects
                 //not_available_data = JsonConvert.DeserializeObject<List<object>>(JsonConvert.SerializeObject(option["optionChain"]["result"][0]["options"])).Count == 0;
                 if (not_available_data)
                 {
-                    Console.WriteLine(string.Format("On {0} There Are No Available Options For Ticker : {1}", date,
-                        ticker));
+                    Console.WriteLine("On {0} There Are No Available Options For Ticker : {1}", date, ticker);
                 }
                 else
                 {
@@ -144,41 +132,33 @@ namespace ExcelAddIn1.PricerObjects
             {
                 if (_option.options is null || _option.options.Count == 0)
                 {
-                    Console.WriteLine(string.Format("On {0} There Are No Available Options For Ticker : {1}", date,
-                        ticker));
+                    Console.WriteLine("On {0} There Are No Available Options For Ticker : {1}", date, ticker);
 
                     return null;
                 }
-                else if (_option.options[0].calls.Count == 0)
+
+                if (_option.options[0].calls.Count == 0)
                 {
-                    Console.WriteLine(string.Format("On {0} There Are No Available Options For Ticker : {1}", date,
-                        ticker));
+                    Console.WriteLine("On {0} There Are No Available Options For Ticker : {1}", date, ticker);
                     return null;
                 }
-                else
-                {
-                    return _option.options[0].calls.ToListOption();
-                }
+
+                return _option.options[0].calls.ToListOption();
             }
-            else
+
+            if (_option.options is null || _option.options.Count == 0)
             {
-                if (_option.options is null || _option.options.Count == 0)
-                {
-                    Console.WriteLine(string.Format("On {0} There Are No Available Options For Ticker : {1}", date,
-                        ticker));
-                    return null;
-                }
-                else if (_option.options[0].puts.Count == 0)
-                {
-                    Console.WriteLine(string.Format("On {0} There Are No Available Options For Ticker : {1}", date,
-                        ticker));
-                    return null;
-                }
-                else
-                {
-                    return _option.options[0].puts.ToListOption();
-                }
+                Console.WriteLine("On {0} There Are No Available Options For Ticker : {1}", date, ticker);
+                return null;
             }
+
+            if (_option.options[0].puts.Count == 0)
+            {
+                Console.WriteLine("On {0} There Are No Available Options For Ticker : {1}", date, ticker);
+                return null;
+            }
+
+            return _option.options[0].puts.ToListOption();
         }
 
 
@@ -202,10 +182,9 @@ namespace ExcelAddIn1.PricerObjects
 
             if (Request.RequestContent.Type == "GET")
                 return await request.Get(url);
-            else if (Request.RequestContent.Type == "POST")
+            if (Request.RequestContent.Type == "POST")
                 return await request.Post(url, content);
-            else
-                throw new NotImplementedException("This Request Type Does Not Exist");
+            throw new NotImplementedException("This Request Type Does Not Exist");
         }
     }
 }
