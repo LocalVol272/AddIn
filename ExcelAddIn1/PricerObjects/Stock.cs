@@ -99,7 +99,7 @@ namespace ExcelAddIn1.PricerObjects
 
         public static List<string> GetAllTickers()
         {
-            return AvailableData.Ticker;
+            return AvailableData.GetTicker();
         }
 
         private void FormatTickers()
