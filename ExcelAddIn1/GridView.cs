@@ -4,11 +4,11 @@ namespace ExcelAddIn1
 {
     public class GridView
     {
-        private readonly int[] _strikes;
+        private readonly double[] _strikes;
         private readonly double[] _tenors;
         private readonly Worksheet _worksheet;
 
-        public GridView(Worksheet ws, int[] strike, double[] tenors)
+        public GridView(Worksheet ws, double[] strike, double[] tenors)
         {
             _worksheet = ws;
             _strikes = strike;

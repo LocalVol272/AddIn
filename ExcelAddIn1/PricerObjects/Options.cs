@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -8,110 +9,146 @@ using Newtonsoft.Json;
 
 namespace ExcelAddIn1.PricerObjects
 {
-    internal class Options : DataLoader, IAuthentification
+    class Options : DataLoader, IAuthentification
     {
+        private Token _token;
         private string url;
+        private string _response;
 
-        public Options()
-        {
-            _request = new ApiRequest();
-        }
-
-        public Options(Token token)
-        {
-            Token = token;
-        }
+        private string Reponse { get => _response; set => _response = value; }
+        public Options() => _request = new ApiRequest();
+        public Options(Token token) => Token = token;
+        public Token Token { get => _token; set => _token = value; }
 
         public Options(Dictionary<string, object> config)
         {
             try
             {
-                Config = config;
-                Token = GetToken(Config);
-                InitRequest(Config);
+                this.Config = config;
+                this.Token = GetToken(this.Config);
+                this.InitRequest(this.Config);
+
             }
             catch (Exception _execption)
             {
                 throw new Exception(_execption.Message);
+
             }
         }
 
-        private string Reponse { get; set; }
-
-        public Token Token { get; set; }
-
         public bool Authentification(Token token)
         {
-            if (token.value is null)
-                throw new Exception(ConfigError.MissingTokenValue);
-            return true;
+            if (token.value is null) { throw new Exception(ConfigError.MissingTokenValue); }
+            else { return true; }
         }
 
 
         public Token GetToken(Dictionary<string, object> config)
         {
-            var Token = "Token";
+            string Token = "Token";
 
-            if (config.ContainsKey(Token)) return new Token(config[Token].ToString());
-            throw new Exception(string.Format(ConfigError.MissingKey, Token));
+            if (config.ContainsKey(Token))
+            {
+                return new Token(config[Token].ToString());
+            }
+            throw new Exception(String.Format(ConfigError.MissingKey, Token));
         }
 
 
         public Dictionary<string, Dictionary<string, List<Option>>> GetOptions()
         {
+
             var stack = new StackTrace();
-            var root = stack.GetFrame(0).GetMethod().Name;
+            string root = stack.GetFrame(0).GetMethod().Name;
+
+            List<string> list_date = (List<string>)Request.RequestContent.Params["Dates"];
+            if (list_date.Count == 0) { list_date = GetAllAvailableMaturities(); }
 
 
-            var res = new Dictionary<string, Dictionary<string, List<Option>>>();
-            Dictionary<string, List<Option>> tempOptionByDates;
-            ;
-            var ListOptions = new List<Option>();
 
 
-            foreach (var ticker in (List<string>) Request.RequestContent.Params["Tickers"])
+            Dictionary<string, Dictionary<string, List<Option>>> res = new Dictionary<string, Dictionary<string, List<Option>>>();
+            Dictionary<string, List<Option>> tempOptionByDates; ;
+            List<Option> ListOptions = new List<Option>();
+
+
+
+            foreach (string ticker in (List<string>)Request.RequestContent.Params["Tickers"])
             {
                 tempOptionByDates = new Dictionary<string, List<Option>>();
 
-                foreach (var dte in (List<string>) Request.RequestContent.Params["Dates"])
+                foreach (string dte in list_date)
                 {
-                    string[] args = {ticker, dte};
+                    Date my_date = new Date(dte);
+                    string[] args = { ticker, my_date.ToTimeStamp().ToString() };
                     BuilUrl(root, args);
-                    Reponse = ExecuteRequest(url)
+                    _response = ExecuteRequest(url)
                         .GetAwaiter()
                         .GetResult();
 
-                    switch (Reponse)
+                    switch (_response)
                     {
                         case "NotFound":
                             break;
                         default:
-                            var str_date = double.Parse(dte).ConvertFromTimestampToString();
-                            tempOptionByDates.Add(str_date,
-                                FormatOption(
-                                    JsonConvert
-                                        .DeserializeObject<
-                                            Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>>>(
-                                            Reponse), ticker, str_date));
+                            string str_date = UniversalDateTime.ConvertFromTimestampToString(Double.Parse(dte));
+                            tempOptionByDates.Add(dte,
+                                FormatOption(JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>>>(_response), ticker, dte));
                             break;
                     }
-                }
 
+
+                }
                 res.Add(ticker, tempOptionByDates);
             }
 
             return res;
+
         }
 
-        private List<Option> FormatOption(
-            Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>> option, string ticker, string date)
+        public List<string> GetAllAvailableMaturities()
+        {
+            var res = new List<string>();
+            var stack = new StackTrace();
+            string root = stack.GetFrame(0).GetMethod().Name;
+            
+
+            foreach (string ticker in (List<string>)Request.RequestContent.Params["Tickers"])
+            {
+                YahooOptionChain _option = new YahooOptionChain();
+                string json;
+                string[] args = {ticker};
+                BuilUrl(root, args);
+                _response = ExecuteRequest(url)
+                       .GetAwaiter()
+                       .GetResult();
+                Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>> response =
+                    JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>>>(_response);
+                json = JsonConvert.SerializeObject(response["optionChain"]["result"][0]);
+                _option = JsonConvert.DeserializeObject<YahooOptionChain>(json);
+                _option.expirationDates.ConvertFromTimestampToString().ForEach(x => res.Add(x));
+            }
+            
+            return res.Distinct().ToList();
+
+
+        }
+
+        
+
+
+
+
+
+        private List<Option> FormatOption(Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>> option,string ticker,[Optional]string date)
         {
             string json;
-            var _option = new YahooOptionChain();
-            var not_available_data = false;
+            YahooOptionChain _option = new YahooOptionChain();
+            bool not_available_data=false;
             try
             {
                 not_available_data = option["optionChain"]["result"].Count == 0;
+                
             }
 
             finally
@@ -119,72 +156,111 @@ namespace ExcelAddIn1.PricerObjects
                 //not_available_data = JsonConvert.DeserializeObject<List<object>>(JsonConvert.SerializeObject(option["optionChain"]["result"][0]["options"])).Count == 0;
                 if (not_available_data)
                 {
-                    Console.WriteLine("On {0} There Are No Available Options For Ticker : {1}", date, ticker);
+                    Console.WriteLine(String.Format("{0} There Are No Available Options For Ticker : {1}", date, ticker));
+
                 }
                 else
                 {
                     json = JsonConvert.SerializeObject(option["optionChain"]["result"][0]);
                     _option = JsonConvert.DeserializeObject<YahooOptionChain>(json);
+
                 }
+
+               
             }
 
-            if (Request.RequestContent.Params["Type"].ToString() == "Call")
+            if (Request.RequestContent.Params["Type"].ToString()=="Call")
+            {
+                
+
+                    if (_option.options is null || _option.options.Count == 0)
+                    {
+                        
+                            Console.WriteLine(String.Format("{0} There Are No Available Options For Ticker : {1}", date, ticker));
+
+                        return null;
+                    }
+                    else if (_option.options[0].calls.Count == 0)
+                    {
+                    Console.WriteLine(String.Format("{0} There Are No Available Options For Ticker : {1}", date, ticker));
+                    return null;
+                    }
+                    else
+                    {
+                        return _option.options[0].calls.ToListOption();
+                    }
+
+            }
+            else
             {
                 if (_option.options is null || _option.options.Count == 0)
                 {
-                    Console.WriteLine("On {0} There Are No Available Options For Ticker : {1}", date, ticker);
 
+                    Console.WriteLine(String.Format("On {0} There Are No Available Options For Ticker : {1}", date, ticker));
                     return null;
-                }
 
-                if (_option.options[0].calls.Count == 0)
+                }
+                else if(_option.options[0].puts.Count == 0)
                 {
-                    Console.WriteLine("On {0} There Are No Available Options For Ticker : {1}", date, ticker);
+                    Console.WriteLine(String.Format("On {0} There Are No Available Options For Ticker : {1}", date, ticker));
                     return null;
                 }
-
-                return _option.options[0].calls.ToListOption();
+                else
+                {
+                    return _option.options[0].puts.ToListOption();
+                }
             }
 
-            if (_option.options is null || _option.options.Count == 0)
-            {
-                Console.WriteLine("On {0} There Are No Available Options For Ticker : {1}", date, ticker);
-                return null;
-            }
+           
 
-            if (_option.options[0].puts.Count == 0)
-            {
-                Console.WriteLine("On {0} There Are No Available Options For Ticker : {1}", date, ticker);
-                return null;
-            }
-
-            return _option.options[0].puts.ToListOption();
         }
 
 
-        private void BuilUrl(string root, [Optional] string[] args)
+
+        private void BuilUrl(string root, [Optional]string[] args)
         {
+            string type = Request.RequestContent.Params["Type"].ToString();
+            string ticker = args[0];
             switch (root)
             {
+                
                 case "GetOptions":
-                    var type = Request.RequestContent.Params["Type"].ToString();
-                    var ticker = args[0];
-                    var date = args[1];
-
-                    url = string.Format(ApiMapping.Roots[root], ticker, date);
+                    string date = args[1];
+                    url = String.Format(ApiMapping.Roots[root],ticker, date);
                     break;
+                case "GetAllAvailableMaturities":
+                    url = String.Format(ApiMapping.Roots[root], ticker);
+                    break;
+
             }
+
+
+
+
         }
 
-        private async Task<string> ExecuteRequest(string url, [Optional] HttpContent content)
+        private async Task<string> ExecuteRequest(string url,[Optional]HttpContent content)
         {
             request = new HttpsRequest();
 
-            if (Request.RequestContent.Type == "GET")
+            if(Request.RequestContent.Type=="GET")
+            {
                 return await request.Get(url);
-            if (Request.RequestContent.Type == "POST")
+            }
+            else if(Request.RequestContent.Type == "POST")
+            {
+              
                 return await request.Post(url, content);
-            throw new NotImplementedException("This Request Type Does Not Exist");
+            }
+            else{throw new NotImplementedException("This Request Type Does Not Exist");}
+
+
         }
+
+
+
+
+
+
     }
 }

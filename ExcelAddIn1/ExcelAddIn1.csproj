@@ -192,34 +192,18 @@
   -->
   <ItemGroup>
     <Compile Include="GridView.cs" />
-    <Compile Include="PricerObjects\AdjClosePrices.cs" />
-    <Compile Include="PricerObjects\ApiMapping.cs" />
-    <Compile Include="PricerObjects\ApiRequestError.cs" />
     <Compile Include="PricerObjects\Authentification.cs" />
-    <Compile Include="PricerObjects\Call.cs" />
-    <Compile Include="PricerObjects\ConfigError.cs" />
     <Compile Include="PricerObjects\DataLoader.cs" />
     <Compile Include="PricerObjects\DataloaderErrors.cs" />
     <Compile Include="PricerObjects\DateFormat.cs" />
-    <Compile Include="PricerObjects\HttpsRequest.cs" />
-    <Compile Include="PricerObjects\Indicators.cs" />
     <Compile Include="PricerObjects\Logger.cs" />
     <Compile Include="NewWorksheet.cs" />
     <Compile Include="PricerObjects\Option.cs" />
-    <Compile Include="PricerObjects\OptionFormat.cs" />
     <Compile Include="PricerObjects\Options.cs" />
-    <Compile Include="PricerObjects\Put.cs" />
     <Compile Include="PricerObjects\RequestErrors.cs" />
     <Compile Include="PricerObjects\Security.cs" />
     <Compile Include="PricerObjects\Stock.cs" />
-    <Compile Include="PricerObjects\Ticker.cs" />
-    <Compile Include="PricerObjects\UniversalDateTime.cs" />
-    <Compile Include="PricerObjects\YahooChartInfo.cs" />
-    <Compile Include="PricerObjects\YahooChartObject.cs" />
-    <Compile Include="PricerObjects\YahooChartPrices.cs" />
     <Compile Include="PricerObjects\YahooCloud.cs" />
-    <Compile Include="PricerObjects\YahooOption.cs" />
-    <Compile Include="PricerObjects\YahooOptionChain.cs" />
     <Compile Include="PricingCalculation\CubicSplines.cs" />
     <Compile Include="PricingCalculation\Grid.cs" />
     <Compile Include="PricingCalculation\Matrix.cs" />
@@ -239,7 +223,6 @@
     <EmbeddedResource Include="Ribbon1.resx">
       <DependentUpon>Ribbon1.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="ExcelAddIn1_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -273,17 +256,12 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>ExcelAddIn1_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>9022DBC441923926A2E14A69B1309D00933DBE40</ManifestCertificateThumbprint>
-  </PropertyGroup>
+
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Include additional build rules for an Office application add-in. -->

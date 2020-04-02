@@ -23,5 +23,4 @@ namespace ExcelAddIn1.PricerObjects
             return ticker;
         }
     }
-
 }

@@ -2,33 +2,42 @@
 
 namespace ExcelAddIn1.PricerObjects
 {
-    internal interface IYahooRequest
+   
+
+    interface IYahooRequest
     {
         Token Token { get; set; }
+       
+
     }
 
-    internal interface IAuthentification
+    interface IAuthentification
     {
         Token Token { get; set; }
         Token GetToken(Dictionary<string, object> config);
         bool Authentification(Token token);
     }
 
-    internal interface IYahooResponse
+    interface IYahooResponse
     {
         YahooRequest Read();
     }
 
-    internal interface IYahooApiResponse : IYahooResponse
+    interface IYahooApiResponse: IYahooResponse
     {
-        bool CheckResponse();
+       bool CheckResponse();
+        
     }
 
-    internal interface IYahooDateFormat
+    interface IYahooDateFormat
     {
         int Year { get; set; }
-        int Month { get; set; }
+        int Month{ get; set; }
         int Day { get; set; }
         double ToTimeStamp();
     }
+
+
+
+
 }
