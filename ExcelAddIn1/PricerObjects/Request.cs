@@ -41,7 +41,6 @@ namespace ExcelAddIn1.PricerObjects
         }
     }
 
-
     public abstract class HttpRequest
     {
         public abstract void Get(HttpContent Request);

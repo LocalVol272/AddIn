@@ -148,7 +148,6 @@ namespace ExcelAddIn1.PricerObjects
             ;
         }
 
-
         private void UnWrapParams()
         {
             request.Params["Dates"] = (List<string>) request.Params["Dates"];
@@ -186,7 +185,6 @@ namespace ExcelAddIn1.PricerObjects
                 throw new Exception(string.Format(ConfigError.MissingKey, productType));
             }
         }
-
 
         public override async Task<string> Post()
         {

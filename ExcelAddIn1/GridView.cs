@@ -4,13 +4,13 @@ namespace ExcelAddIn1
 {
     public class GridView
     {
-        private Worksheet _Worksheet;
-        private int[] _strikes;
-        private double[] _tenors;
+        private readonly int[] _strikes;
+        private readonly double[] _tenors;
+        private readonly Worksheet _worksheet;
 
         public GridView(Worksheet ws, int[] strike, double[] tenors)
         {
-            _Worksheet = ws;
+            _worksheet = ws;
             _strikes = strike;
             _tenors = tenors;
         }
@@ -20,77 +20,83 @@ namespace ExcelAddIn1
             DisplayStrikes(rowCoordinate, columnCoordinate);
             DisplayTenors(rowCoordinate, columnCoordinate);
             DisplayInsideGrid(rowCoordinate, columnCoordinate, data);
-            _Worksheet.Columns.AutoFit();
+            _worksheet.Columns.AutoFit();
         }
 
         private void DisplayStrikes(int rowCoordinate, int columnCoordinate)
         {
-            var strikes_coord = rowCoordinate + _strikes.Length - 1;
-            var strikeRange = _Worksheet.Range[_Worksheet.Cells[rowCoordinate + 2, columnCoordinate],
-                _Worksheet.Cells[strikes_coord + 2, columnCoordinate]];
+            var strikesCoord = rowCoordinate + _strikes.Length - 1;
+            var strikeRange = _worksheet.Range[_worksheet.Cells[rowCoordinate + 2, columnCoordinate],
+                _worksheet.Cells[strikesCoord + 2, columnCoordinate]];
             strikeRange.Merge();
             strikeRange.Orientation = 90;
-            strikeRange.Value = "Strikes";
-            strikeRange.Font.FontStyle = "Bold";
-            strikeRange.Interior.Color = 14599344;
-            strikeRange.HorizontalAlignment = XlHAlign.xlHAlignCenter;
-            strikeRange.VerticalAlignment = XlVAlign.xlVAlignCenter;
-            int curr_coord;
+            InsideFont(strikeRange, "Strikes");
             for (var i = 0; i < _strikes.Length; i++)
             {
-                curr_coord = rowCoordinate + i + 2;
-                _Worksheet.Cells[curr_coord, columnCoordinate + 1].Value = _strikes[i];
-                _Worksheet.Cells[curr_coord, columnCoordinate + 1].Interior.Color = 13882323;
+                var currCoord = rowCoordinate + i + 2;
+                _worksheet.Cells[currCoord, columnCoordinate + 1].Value = _strikes[i];
+                _worksheet.Cells[currCoord, columnCoordinate + 1].Interior.Color = 13882323;
             }
 
-            Range _cell1 = _Worksheet.Cells[rowCoordinate + 2, columnCoordinate];
-            Range _cell2 = _Worksheet.Cells[rowCoordinate + 2, columnCoordinate + 1];
-            Range _cell3 = _Worksheet.Cells[strikes_coord + 2, columnCoordinate + 1];
-            _Worksheet.Range[_cell2, _cell3].Borders.LineStyle = XlLineStyle.xlContinuous;
-            _Worksheet.Range[_cell2, _cell3].Borders.Weight = 2d;
-            _Worksheet.Range[_cell1, _cell3].Borders.LineStyle = XlLineStyle.xlContinuous;
-            _Worksheet.Range[_cell1, _cell3].Borders.Weight = 3d;
+            Range cell1 = _worksheet.Cells[rowCoordinate + 2, columnCoordinate];
+            Range cell2 = _worksheet.Cells[rowCoordinate + 2, columnCoordinate + 1];
+            Range cell3 = _worksheet.Cells[strikesCoord + 2, columnCoordinate + 1];
+            BordersStyleTwo(cell2, cell3, cell1);
         }
 
         private void DisplayTenors(int rowCoordinate, int columnCoordinate)
         {
-            var tenors_coord = columnCoordinate + _tenors.Length - 1;
-            var tenorRange = _Worksheet.Range[_Worksheet.Cells[rowCoordinate, columnCoordinate + 2],
-                _Worksheet.Cells[rowCoordinate, tenors_coord + 2]];
+            var tenorsCoord = columnCoordinate + _tenors.Length - 1;
+            var tenorRange = _worksheet.Range[_worksheet.Cells[rowCoordinate, columnCoordinate + 2],
+                _worksheet.Cells[rowCoordinate, tenorsCoord + 2]];
             tenorRange.Merge();
-            tenorRange.Value = "Tenors";
+            InsideFont(tenorRange, "Tenors");
+            for (var i = 0; i < _tenors.Length; i++)
+            {
+                var currCoord = columnCoordinate + i;
+                _worksheet.Cells[rowCoordinate + 1, currCoord + 2].Value = _tenors[i];
+                _worksheet.Cells[rowCoordinate + 1, currCoord + 2].Interior.Color = 13882323;
+            }
+
+            Range cell1 = _worksheet.Cells[rowCoordinate, columnCoordinate + 2];
+            Range cell2 = _worksheet.Cells[rowCoordinate + 1, columnCoordinate + 2];
+            Range cell3 = _worksheet.Cells[rowCoordinate + 1, tenorsCoord + 2];
+            BordersStyleTwo(cell2, cell3, cell1);
+        }
+
+        private void BordersStyleTwo(Range cell2, Range cell3, Range cell1)
+        {
+            _worksheet.Range[cell2, cell3].Borders.LineStyle = XlLineStyle.xlContinuous;
+            _worksheet.Range[cell2, cell3].Borders.Weight = 2d;
+            _worksheet.Range[cell1, cell3].Borders.LineStyle = XlLineStyle.xlContinuous;
+            _worksheet.Range[cell1, cell3].Borders.Weight = 3d;
+            _worksheet.Range[cell2, cell3].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+        }
+
+        private static void InsideFont(Range tenorRange, string type)
+        {
+            tenorRange.Value = type;
             tenorRange.Font.FontStyle = "Bold";
             tenorRange.Interior.Color = 14599344;
             tenorRange.HorizontalAlignment = XlHAlign.xlHAlignCenter;
             tenorRange.VerticalAlignment = XlVAlign.xlVAlignCenter;
-            int curr_coord;
-            for (var i = 0; i < _tenors.Length; i++)
-            {
-                curr_coord = columnCoordinate + i;
-                _Worksheet.Cells[rowCoordinate + 1, curr_coord + 2].Value = _tenors[i];
-                _Worksheet.Cells[rowCoordinate + 1, curr_coord + 2].Interior.Color = 13882323;
-            }
-
-            Range _cell1 = _Worksheet.Cells[rowCoordinate, columnCoordinate + 2];
-            Range _cell2 = _Worksheet.Cells[rowCoordinate + 1, columnCoordinate + 2];
-            Range _cell3 = _Worksheet.Cells[rowCoordinate + 1, tenors_coord + 2];
-            _Worksheet.Range[_cell2, _cell3].Borders.LineStyle = XlLineStyle.xlContinuous;
-            _Worksheet.Range[_cell2, _cell3].Borders.Weight = 2d;
-            _Worksheet.Range[_cell1, _cell3].Borders.LineStyle = XlLineStyle.xlContinuous;
-            _Worksheet.Range[_cell1, _cell3].Borders.Weight = 3d;
-            _Worksheet.Range[_cell2, _cell3].HorizontalAlignment = XlHAlign.xlHAlignCenter;
         }
 
         private void DisplayInsideGrid(int rowCoordinate, int columnCoordinate, double[,] data)
         {
             for (var i = 0; i < _strikes.Length; i++)
             for (var j = 0; j < _tenors.Length; j++)
-                _Worksheet.Cells[rowCoordinate + i + 2, columnCoordinate + j + 2].Value = data[i, j];
-            Range _cell1 = _Worksheet.Cells[rowCoordinate + 2, columnCoordinate + 2];
-            Range _cell2 = _Worksheet.Cells[rowCoordinate + _strikes.Length + 1, columnCoordinate + _tenors.Length + 1];
-            _Worksheet.Range[_cell1, _cell2].Borders.LineStyle = XlLineStyle.xlContinuous;
-            _Worksheet.Range[_cell1, _cell2].Borders.Weight = 2d;
-            _Worksheet.Range[_cell1, _cell2].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                _worksheet.Cells[rowCoordinate + i + 2, columnCoordinate + j + 2].Value = data[i, j];
+            Range cell1 = _worksheet.Cells[rowCoordinate + 2, columnCoordinate + 2];
+            Range cell2 = _worksheet.Cells[rowCoordinate + _strikes.Length + 1, columnCoordinate + _tenors.Length + 1];
+            BordersStyleOne(cell1, cell2);
+        }
+
+        private void BordersStyleOne(Range cell1, Range cell2)
+        {
+            _worksheet.Range[cell1, cell2].Borders.LineStyle = XlLineStyle.xlContinuous;
+            _worksheet.Range[cell1, cell2].Borders.Weight = 2d;
+            _worksheet.Range[cell1, cell2].HorizontalAlignment = XlHAlign.xlHAlignCenter;
         }
     }
 }

@@ -14,15 +14,12 @@ namespace ExcelAddIn1
             var nameSheet = "LocalVolatilityWS_" + _creationSheetDate.Replace(":", "_");
             _newWorksheet.Name = nameSheet;
             VisualizeData();
-            //"Ok";
         }
 
         private static void VisualizeData()
         {
             SetText();
             SetColor();
-
-
             _newWorksheet.Columns.AutoFit();
         }
 
