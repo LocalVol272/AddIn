@@ -45,34 +45,24 @@ namespace ExcelAddIn1
 
         private void Price_Click(object sender, RibbonControlEventArgs e)
         {
-            Globals.ThisAddIn.Application.ScreenUpdating = false;
-            _newWorksheet.Range["B" +_lastRow].Value = "Volatility Surface";
-            _newWorksheet.Range["B" + _lastRow].Font.FontStyle = "Bold";
-            _newWorksheet.Range["B" + _lastRow].Font.Underline = true;
-            //DL data
-            int[] strike_ex = new int[11];
-            double[] tenor_ex = new double[11];
-            double[,] price_ex = new double[strike_ex.Length, tenor_ex.Length];
-            int s = 150;
-            double t = 0.25;
-            for (int i = 0; i < strike_ex.Length; i++)
-            {
-                strike_ex[i] = s;
-                tenor_ex[i] = t;
-                s += 10;
-                t += 0.25;
-                int c = 10;
-                for (int j = 0; j < tenor_ex.Length; j++)
-                {
-                    c += 2;
-                    price_ex[i, j] = s * t + c;
-                }
-            }
-            GridView gv = new GridView(_newWorksheet, strike_ex, tenor_ex);
-            gv.DisplayGrid(_lastRow + 1, 3, price_ex);
-            gv.DisplayVolSurface("Volatility Surface", _lastRow + 2, 4);
-            _lastRow +=  strike_ex.Length + 2;
-            Globals.ThisAddIn.Application.ScreenUpdating = true;
+            //ICI ON GO POUR PRICER
+
+
+/*            List<string> TickerList = new List<string>() { "AAPL","FB","TSLA" };
+            Dictionary<string, object> Params = new Dictionary<string, object>();
+            List<string> DateList = new List<string>(){"20201030","202010","202002"};
+            Params.Add("ProductType", "Option/Call");
+            Params.Add("Dates", DateList);
+            Params.Add("Tickers", TickerList);
+
+            Dictionary<string, object> Config = new Dictionary<string, object>(){};
+            Config.Add("Token","Tsk_bbe66f58b6d149f59a9af4eb83bfc7f5");
+            Config.Add("Type", "GET");
+            Config.Add("Params", Params);
+
+            Options test = new Options(Config);
+            Dictionary<string, Dictionary<string, List<Option>>> res = test.GetOptions();
+            Config.Add("TYPE", "GET");*/
         }
 
 
@@ -107,39 +97,7 @@ namespace ExcelAddIn1
         {
             _newWorksheet.Range["B3"].Value = comboBox3.Text;
         }
-        private void button3_Click(object sender, RibbonControlEventArgs e)
-        {
-            Globals.ThisAddIn.Application.ScreenUpdating = false;
-            //DL data
-            int[] strike_ex = new int[11];
-            double[] tenor_ex = new double[11];
-            double[,] price_ex = new double[strike_ex.Length, tenor_ex.Length];
-            int s = 150;
-            double t = 0.25;
-            for (int i = 0; i < strike_ex.Length; i++)
-            {
-                strike_ex[i] = s;
-                tenor_ex[i] = t;
-                s += 10;
-                t += 0.25;
-                int c = 10;
-                for (int j = 0; j < tenor_ex.Length; j++)
-                {
-                    c += 2;
-                    price_ex[i, j] = s * t + c;
-                }
-            }
-            _lastRow += 3;
-            _newWorksheet.Range["B"+_lastRow].Value = "Option Price with Local Volatility";
-            _newWorksheet.Range["B" + _lastRow ].Font.FontStyle = "Bold";
-            _newWorksheet.Range["B" + _lastRow ].Font.Underline = true;
 
-            GridView gv = new GridView(_newWorksheet, strike_ex, tenor_ex);
-            gv.DisplayGrid(_lastRow+1, 3, price_ex);
-           
-
-            Globals.ThisAddIn.Application.ScreenUpdating = true;
-        }
         private void button4_Click(object sender, RibbonControlEventArgs e)
         {
             Globals.ThisAddIn.Application.ScreenUpdating = false;
