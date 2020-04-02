@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using ProjetVolSto.Struct;
 using System.Runtime.InteropServices;
 namespace ProjetVolSto.PricerObjects
 {
@@ -11,6 +14,10 @@ namespace ProjetVolSto.PricerObjects
         public ApiRequest Request { get => _request; set => _request = value; }
         internal Dictionary<string, object> Config { get; set; }
 
+
+     
+        
+        
         public void Execute()
         {
             InitRequest();
@@ -18,7 +25,7 @@ namespace ProjetVolSto.PricerObjects
             request = new HttpsRequest();
         }
 
-        protected void InitRequest([Optional] Dictionary<string, object> Config)
+        protected void InitRequest([Optional] Dictionary<string,object> Config)
         {
             _request = MakeRequest(Config);
             _request.BuildRequest();

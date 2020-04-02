@@ -1,6 +1,8 @@
 ﻿using ProjetVolSto.Struct;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Net.Http;
@@ -9,9 +11,18 @@ using System.Runtime.InteropServices;
 
 namespace ProjetVolSto.PricerObjects
 {
+
+    public class StockPrice
+    {
+
+    }
+
+
+
+
     public class Ticker
     {
-        public string symbol { get; set; }
+        public string symbol { get; set;}
     }
 
     public static class TickerFormat
@@ -22,7 +33,10 @@ namespace ProjetVolSto.PricerObjects
             list.ForEach(x => listTickers.Add(x.symbol));
             return listTickers;
         }
+
     }
+
+
 
 
     class Stock : DataLoader, IAuthentification
@@ -31,27 +45,10 @@ namespace ProjetVolSto.PricerObjects
         private string url;
         private Token _token;
         private IEXRequest _requestContent;
-
-        public Token Token
-        {
-            get => _token;
-            set => _token = value;
-        }
-
-        private string Reponse
-        {
-            get => _response;
-            set => _response = value;
-        }
-
+        public Token Token { get => _token; set => _token = value; }
+        private string Reponse { get => _response; set => _response = value; }
         private new HttpsRequest request;
-
-        public IEXRequest RequestContent
-        {
-            get => _requestContent;
-            set => RequestContent = _requestContent;
-        }
-
+        public IEXRequest RequestContent { get => _requestContent; set => RequestContent = _requestContent; }
         public Stock(Dictionary<string, object> config)
         {
             this.Config = config;
@@ -62,22 +59,31 @@ namespace ProjetVolSto.PricerObjects
         public Stock() => _request = new ApiRequest();
         public Stock(Token token) => Token = token;
 
-        public List<Ticker> GetAllTickers(string country)
+        public Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>> GetAllTickers(string country)
         {
-            string[] args = {country};
+            string[] args = { country };
             var stack = new StackTrace();
             string root = stack.GetFrame(0).GetMethod().Name;
             Init(args, root);
             GetReponse();
-
-            return JsonConvert.DeserializeObject<List<Ticker>>(_response);
+            //FormatOption(JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>>>(_response));
+            return  JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>>>(_response);
         }
+
+
+
+        public static List<string> GetAllTickers()
+        {
+            return AvailableData.Ticker;
+        }
+
+
 
         private void GetReponse()
         {
             _response = ExecuteRequest(url)
-                .GetAwaiter()
-                .GetResult();
+                            .GetAwaiter()
+                            .GetResult();
             _requestContent.Response = _response;
         }
 
@@ -89,24 +95,33 @@ namespace ProjetVolSto.PricerObjects
 
         private async Task<string> ExecuteRequest(string url)
         {
+
             return await request.Get(url);
         }
 
 
         private async Task<string> ExecuteRequest(string url, HttpContent requestContent)
         {
-            return await request.Post(url, requestContent);
+
+            return await request.Post(url,requestContent);
         }
 
 
-        private void BuildUrl(string root, [Optional] string[] args)
+        private void BuildUrl(string root,[Optional]string[] args)
         {
+            
             switch (root)
             {
+                
                 case "GetAllTickers":
-                    url = String.Format(ApiMapping.Roots[root], args[0], Token.value);
+                    url = "https://query1.finance.yahoo.com/v7/finance/options/MSFT";
+
+
+                    //String.Format(ApiMapping.Roots[root], args[0],Token.value);
                     break;
+
             }
+
         }
 
 
@@ -117,6 +132,7 @@ namespace ProjetVolSto.PricerObjects
                 request = new HttpsRequest();
                 Request.RequestContent = new IEXRequest();
             }
+
         }
 
         public Token GetToken(Dictionary<string, object> config)
@@ -127,21 +143,21 @@ namespace ProjetVolSto.PricerObjects
             {
                 return new Token(config[Token].ToString());
             }
-
             throw new Exception(String.Format(ConfigError.MissingKey, Token));
         }
 
 
         public bool Authentification(Token token)
         {
-            if (token.value is null)
-            {
-                throw new Exception(ConfigError.MissingTokenValue);
-            }
-            else
-            {
-                return true;
-            }
+            if (token.value is null) { throw new Exception(ConfigError.MissingTokenValue); }
+            else { return true; }
         }
+
+
+
+        
     }
+
+
 }
+

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Office.Tools.Ribbon;
+using ProjetVolSto.PricerObjects;
+using ProjetVolSto.Struct;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace ExcelAddIn1

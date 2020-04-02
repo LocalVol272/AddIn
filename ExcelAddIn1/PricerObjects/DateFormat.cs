@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 namespace ProjetVolSto.PricerObjects
 {
-    class Date : IEXDate
+    class Date:IYahooDateFormat
     {
-        string day, month, year;
-        public string Day { get => day; set => day = value; }
-        public string Month { get => month; set => month = value; }
-        public string Year { get => year; set => year = value; }
-
-        public Date(int year, int month, [Optional] int day)
+        int day, month, year;
+        public int Day { get => day; set => day = value; }
+        public int Month { get => month; set => month = value; }
+        public int Year { get => year; set => year = value; }
+        
+        public Date(int year,int month,[Optional] int day)
         {
-            Year = year.ToString(); Month = month.ToString(); Day = day.ToString();
+            Year = year; Month= month; Day = day; 
         }
 
 
@@ -20,35 +24,60 @@ namespace ProjetVolSto.PricerObjects
         {
             if (date.Length == 8)
             {
-                Year = date.Substring(0, 4);
-                Month = date.Substring(4, 2);
-                Day = date.Substring(6, 2);
+                Year = Int32.Parse(date.Substring(0, 4));
+                Month = Int32.Parse(date.Substring(4, 2));
+                Day = Int32.Parse(date.Substring(6, 2));
             }
-            else if (date.Length == 6)
+            else if(date.Length == 6)
             {
-                Year = date.Substring(0, 4);
-                Month = date.Substring(4, 2);
+                Year = Int32.Parse(date.Substring(0, 4));
+                Month = Int32.Parse(date.Substring(4, 2));
             }
-            else { throw new Exception(DataLoaderError.DateFormatError); }
+            else { throw new Exception(DataLoaderError.DateFormatError);}
         }
+        
 
 
-
-        public string Format()
+        public double ToTimeStamp()
         {
-            if (Day is null)
-            {
-                return String.Format("{0}{1}", year, month);
-            }
-            else
-            {
-                return String.Format("{0}{1}{2}", year, month, day);
-            }
+            DateTime dt = new DateTime(Year, Month, Day);
+            return dt.ConvertToTimestamp();
+        }
+
+
+
+
+       
+
+    }
+
+    public static class UniversalDateTime
+    {
+
+        public static string ConvertFromTimestampToString(double timestamp)
+        {
+            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return string.Format("{0:yyyyMMdd}", origin.AddSeconds(timestamp));
 
         }
 
+
+
+        public static DateTime ConvertFromTimestamp(double timestamp)
+        {
+            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return origin.AddSeconds(timestamp);
+        }
+
+        public static double ConvertToTimestamp(this DateTime date)
+        {
+            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            TimeSpan diff = date - origin;
+            return Math.Floor(diff.TotalSeconds);
+        }
 
 
 
     }
+
 }
