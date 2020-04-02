@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ProjetVolSto.PricerObjects
+﻿namespace ExcelAddIn1.PricerObjects
 {
     public static class HttpRequestError
     {
@@ -12,4 +6,3 @@ namespace ProjetVolSto.PricerObjects
         public const string UnsecuredRequest = "Https:// Required";
     }
 }
-

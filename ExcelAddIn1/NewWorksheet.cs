@@ -22,22 +22,18 @@ namespace ExcelAddIn1
             SetText();
             SetColor();
 
-             
+
             _newWorksheet.Columns.AutoFit();
         }
 
         private static void SetColor()
         {
-           
-
             _newWorksheet.Range["A1", "A3"].Font.ColorIndex = 1;
             _newWorksheet.Range["A1", "A3"].Font.Size = 11;
             _newWorksheet.Range["A1", "A3"].Font.FontStyle = "Bold";
             _newWorksheet.Range["A1", "A3"].Interior.Color = 14599344;
             _newWorksheet.Range["A1", "B3"].Borders.LineStyle = XlLineStyle.xlContinuous;
             _newWorksheet.Range["A1", "B3"].Borders.Weight = 2d;
-
-
         }
 
         private static void SetText()
@@ -45,12 +41,6 @@ namespace ExcelAddIn1
             _newWorksheet.Range["A1"].Value = "Ticker";
             _newWorksheet.Range["A2"].Value = "Underlying Price";
             _newWorksheet.Range["A3"].Value = "Option Type";
-             
-
-           
-
         }
-
-        
     }
 }

@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace LocalVolatility
+namespace ExcelAddIn1.PricingCalculation
 {
     public class CubicSpline
     {
-
         // n-1 spline coefficients for n points
         private double[] a;
         private double[] b;
@@ -27,7 +26,8 @@ namespace LocalVolatility
         // startSlope Optional slope constraint for the first point. Single.NaN means no constraint
         // endSlope Optional slope constraint for the final point. Single.NaN means no constraint
         // debug Turn on console output. Default is false
-        public CubicSpline(double[] x, double[] y, double startSlope = double.NaN, double endSlope = double.NaN, bool debug = false)
+        public CubicSpline(double[] x, double[] y, double startSlope = double.NaN, double endSlope = double.NaN,
+            bool debug = false)
         {
             Fit(x, y, startSlope, endSlope, debug);
         }
@@ -39,19 +39,12 @@ namespace LocalVolatility
         }
 
 
-
         // Find the i and i+1 such that xInit[i] < x < xInit[i+1] :
         private int _NextI(double x)
         {
-            if (x < xInit[_previousI])
-            {
-                throw new ArgumentException("X values must be sorted !");
-            }
+            if (x < xInit[_previousI]) throw new ArgumentException("X values must be sorted !");
 
-            while ((_previousI < xInit.Length - 2) && (x > xInit[_previousI + 1]))
-            {
-                _previousI++;
-            }
+            while (_previousI < xInit.Length - 2 && x > xInit[_previousI + 1]) _previousI++;
 
             return _previousI;
         }
@@ -61,13 +54,12 @@ namespace LocalVolatility
 
         private double EstimateSpline(double x, int j, bool debug = false)
         {
-            double dx = xInit[j + 1] - xInit[j];
-            double t = (x - xInit[j]) / dx;
-            double y = (1 - t) * yInit[j] + t * yInit[j + 1] + t * (1 - t) * (a[j] * (1 - t) + b[j] * t); // equation 9
+            var dx = xInit[j + 1] - xInit[j];
+            var t = (x - xInit[j]) / dx;
+            var y = (1 - t) * yInit[j] + t * yInit[j + 1] + t * (1 - t) * (a[j] * (1 - t) + b[j] * t); // equation 9
             if (debug) Console.WriteLine("xs = {0}, j = {1}, t = {2}", x, j, t);
             return y;
         }
-
 
 
         // Fit x,y and then eval at points xs and return the corresponding y's.
@@ -81,34 +73,32 @@ namespace LocalVolatility
         // endSlope Optional slope constraint for the final point. Single.NaN means no constraint
         // debug Turn on console output. Default is false.
         // returns the computed y values for each xs.
-        public double[] FitAndEstimate(double[] x, double[] y, double[] xs, double startSlope = double.NaN, double endSlope = double.NaN, bool debug = false)
+        public double[] FitAndEstimate(double[] x, double[] y, double[] xs, double startSlope = double.NaN,
+            double endSlope = double.NaN, bool debug = false)
         {
             Fit(x, y, startSlope, endSlope, debug);
             return Estimate(xs, debug);
         }
 
-        public void Fit(double[] x, double[] y, double startSlope = double.NaN, double endSlope = double.NaN, bool debug = false)
+        public void Fit(double[] x, double[] y, double startSlope = double.NaN, double endSlope = double.NaN,
+            bool debug = false)
         {
             /*if (Single.IsInfinity(startSlope) || Single.IsInfinity(endSlope))
             {
                 throw new Exception("startSlope and endSlope cannot be infinity.");
             }*/
             //save initial values (for future estimates)
-            this.xInit = x;
-            this.yInit = y;
+            xInit = x;
+            yInit = y;
 
-            int n = x.Length;
-            double[] r = new double[n];
+            var n = x.Length;
+            var r = new double[n];
 
             //tridiagonal matrix
-            double[,] m = new double[n, n];
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    m[j, i] = 0;
-                }
-            }
+            var m = new double[n, n];
+            for (var i = 0; i < n; i++)
+            for (var j = 0; j < n; j++)
+                m[j, i] = 0;
 
             double dx1, dx2, dy1, dy2;
 
@@ -128,7 +118,7 @@ namespace LocalVolatility
             }
 
             // Fill-in middle values for all rows :
-            for (int i = 1; i < n - 1; i++)
+            for (var i = 1; i < n - 1; i++)
             {
                 dx1 = x[i] - x[i - 1];
                 dx2 = x[i + 1] - x[i];
@@ -168,18 +158,18 @@ namespace LocalVolatility
             //==================================================================
             //==================================================================
             //Thomas algoithm===================================================
-            MatrixDecomposition md = new MatrixDecomposition(m);
-            double[] k = md.ThomasAlgorithm(r);
+            var md = new MatrixDecomposition(m);
+            var k = md.ThomasAlgorithm(r);
             //==================================================================
             // we want k, the solution to the matrix
             //==================================================================
             //==================================================================
 
             // slpine coefs a and b
-            this.a = new double[n - 1];
-            this.b = new double[n - 1];
+            a = new double[n - 1];
+            b = new double[n - 1];
 
-            for (int i = 1; i < n; i++)
+            for (var i = 1; i < n; i++)
             {
                 dx1 = x[i] - x[i - 1];
                 dy1 = y[i] - y[i - 1];
@@ -195,14 +185,14 @@ namespace LocalVolatility
         {
             IsFitted();
 
-            int n = x.Length;
-            double[] retY = new double[n];
+            var n = x.Length;
+            var retY = new double[n];
             _previousI = 0; //for multiple estimations, set to 0 at each eval
 
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 // get the right spline to use :
-                int j = _NextI(x[i]);
+                var j = _NextI(x[i]);
 
                 // Estimate with j spline
                 retY[i] = EstimateSpline(x[i], j, debug);
@@ -217,23 +207,24 @@ namespace LocalVolatility
             //first check if fitted :
             IsFitted();
 
-            int n = x.Length;
-            double[] retSlopes = new double[n];
+            var n = x.Length;
+            var retSlopes = new double[n];
 
             _previousI = 0; //for multiple estimations, set to 0 at each eval
 
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 // Find which spline can be used to compute this x (by simultaneous traverse)
-                int j = _NextI(x[i]);
+                var j = _NextI(x[i]);
 
                 // Estimate at j spline
-                double dx = xInit[j + 1] - xInit[j];
-                double dy = yInit[j + 1] - yInit[j];
-                double t = (x[i] - xInit[j]) / dx;
+                var dx = xInit[j + 1] - xInit[j];
+                var dy = yInit[j + 1] - yInit[j];
+                var t = (x[i] - xInit[j]) / dx;
 
 
-                retSlopes[i] = dy / dx + (1 - 2 * t) * (a[j] * (1 - t) + b[j] * t) / dx + t * (1 - t) * (b[j] - a[j]) / dx;
+                retSlopes[i] = dy / dx + (1 - 2 * t) * (a[j] * (1 - t) + b[j] * t) / dx +
+                               t * (1 - t) * (b[j] - a[j]) / dx;
 
                 if (debug) Console.WriteLine("[{0}]: xs = {1}, j = {2}, t = {3}", i, x[i], j, t);
             }

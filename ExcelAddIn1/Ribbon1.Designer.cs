@@ -37,18 +37,18 @@ namespace ExcelAddIn1
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Ribbon1));
             this.tab1 = this.Factory.CreateRibbonTab();
             this.group1 = this.Factory.CreateRibbonGroup();
-            this.button2 = this.Factory.CreateRibbonButton();
-            this.button1 = this.Factory.CreateRibbonButton();
             this.group2 = this.Factory.CreateRibbonGroup();
             this.comboBox2 = this.Factory.CreateRibbonComboBox();
             this.comboBox3 = this.Factory.CreateRibbonComboBox();
-            this.button4 = this.Factory.CreateRibbonButton();
             this.group3 = this.Factory.CreateRibbonGroup();
-            this.Price = this.Factory.CreateRibbonButton();
             this.editBox1 = this.Factory.CreateRibbonEditBox();
             this.editBox2 = this.Factory.CreateRibbonEditBox();
             this.editBox3 = this.Factory.CreateRibbonEditBox();
             this.group4 = this.Factory.CreateRibbonGroup();
+            this.button2 = this.Factory.CreateRibbonButton();
+            this.button1 = this.Factory.CreateRibbonButton();
+            this.button4 = this.Factory.CreateRibbonButton();
+            this.Price = this.Factory.CreateRibbonButton();
             this.button3 = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
@@ -73,20 +73,6 @@ namespace ExcelAddIn1
             this.group1.Label = "Initialization";
             this.group1.Name = "group1";
             // 
-            // button2
-            // 
-            this.button2.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
-            this.button2.Label = "New Worksheet";
-            this.button2.Name = "button2";
-            this.button2.ShowImage = true;
-            this.button2.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button2_Click);
-            // 
-            // button1
-            // 
-            this.button1.Label = "";
-            this.button1.Name = "button1";
-            // 
             // group2
             // 
             this.group2.Items.Add(this.comboBox2);
@@ -109,14 +95,6 @@ namespace ExcelAddIn1
             this.comboBox3.Text = null;
             this.comboBox3.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox3_TextChanged);
             // 
-            // button4
-            // 
-            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
-            this.button4.Label = "Import Data";
-            this.button4.Name = "button4";
-            this.button4.ShowImage = true;
-            this.button4.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button4_Click);
-            // 
             // group3
             // 
             this.group3.Items.Add(this.Price);
@@ -125,15 +103,6 @@ namespace ExcelAddIn1
             this.group3.Items.Add(this.editBox3);
             this.group3.Label = "Volatility Surface";
             this.group3.Name = "group3";
-            // 
-            // Price
-            // 
-            this.Price.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.Price.Image = ((System.Drawing.Image)(resources.GetObject("Price.Image")));
-            this.Price.Label = "Volatility Surface";
-            this.Price.Name = "Price";
-            this.Price.ShowImage = true;
-            this.Price.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.Price_Click);
             // 
             // editBox1
             // 
@@ -158,6 +127,37 @@ namespace ExcelAddIn1
             this.group4.Items.Add(this.button3);
             this.group4.Label = "Pricing";
             this.group4.Name = "group4";
+            // 
+            // button2
+            // 
+            this.button2.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
+            this.button2.Label = "New Worksheet";
+            this.button2.Name = "button2";
+            this.button2.ShowImage = true;
+            this.button2.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Label = "";
+            this.button1.Name = "button1";
+            // 
+            // button4
+            // 
+            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
+            this.button4.Label = "Import Data";
+            this.button4.Name = "button4";
+            this.button4.ShowImage = true;
+            this.button4.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button4_Click);
+            // 
+            // Price
+            // 
+            this.Price.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.Price.Image = ((System.Drawing.Image)(resources.GetObject("Price.Image")));
+            this.Price.Label = "Volatility Surface";
+            this.Price.Name = "Price";
+            this.Price.ShowImage = true;
+            this.Price.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.Price_Click);
             // 
             // button3
             // 

@@ -1,214 +1,228 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using ProjetVolSto.PricerObjects;
-using ProjetVolSto.Struct;
 
-namespace ProjetVolSto.PricerObjects
+namespace ExcelAddIn1.PricerObjects
 {
-    class ApiRequest : HttpRequest, IYahooRequest,IAuthentification
+    internal class ApiRequest : HttpRequest, IYahooRequest, IAuthentification
     {
         protected Token token;
         private IEXRequest request;
         private Dictionary<string, object> config;
-        Token IYahooRequest.Token { get => this.token; set => this.token = value; }
-        Token IAuthentification.Token { get => this.token; set => this.token =value; }
-        public IEXRequest RequestContent { get => request; set => request = value; }
-        public override void Get(IEXRequest Request) => throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
-        public override void Post(IEXRequest Request) => throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
-        public override void Get(HttpContent Request) => throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
-        public override void Post(HttpContent Request) => throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
-        public override void Get(object Request) => throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
-        public override void Post(object Request) => throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
-        public override Task<string> Get(string url) => throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
-        public override Task<string> Post(string url, HttpContent requestContent) => throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
-        public bool Authentification(Token token) => throw new NotImplementedException();
-        public ApiRequest() {; }
+
+        Token IYahooRequest.Token
+        {
+            get => token;
+            set => token = value;
+        }
+
+        Token IAuthentification.Token
+        {
+            get => token;
+            set => token = value;
+        }
+
+        public IEXRequest RequestContent
+        {
+            get => request;
+            set => request = value;
+        }
+
+        public override void Get(IEXRequest Request)
+        {
+            throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
+        }
+
+        public override void Post(IEXRequest Request)
+        {
+            throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
+        }
+
+        public override void Get(HttpContent Request)
+        {
+            throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
+        }
+
+        public override void Post(HttpContent Request)
+        {
+            throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
+        }
+
+        public override void Get(object Request)
+        {
+            throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
+        }
+
+        public override void Post(object Request)
+        {
+            throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
+        }
+
+        public override Task<string> Get(string url)
+        {
+            throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
+        }
+
+        public override Task<string> Post(string url, HttpContent requestContent)
+        {
+            throw new NotImplementedException(ApiRequestError.NonImplementedMethod);
+        }
+
+        public bool Authentification(Token token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ApiRequest()
+        {
+            ;
+        }
 
         public ApiRequest(Dictionary<string, object> config)
         {
             this.config = config;
-            this.token = this.GetToken(config);
-            
+            token = GetToken(config);
         }
-
-        
-
-       
-
-
-
 
 
         public Token GetToken(Dictionary<string, object> config)
         {
-            string Token = "Token";
+            var Token = "Token";
 
-            if (config.ContainsKey(Token))
-            {
-                return new Token(config[Token].ToString()) ;
-            }
-            throw new Exception(String.Format(ConfigError.MissingKey, Token));
+            if (config.ContainsKey(Token)) return new Token(config[Token].ToString());
+            throw new Exception(string.Format(ConfigError.MissingKey, Token));
         }
 
         public void BuildRequest()
         {
-
-            
-            this.SetRequestType();
-            this.SetParams();
-            this.SetTickers();
-            this.UnWrapParams();
-            this.BuildUrl();
-            this.RequestContent = request;
-            
+            SetRequestType();
+            SetParams();
+            SetTickers();
+            UnWrapParams();
+            BuildUrl();
+            RequestContent = request;
         }
 
         private void SetTickers()
         {
-            string Tickers = "Tickers";
+            var Tickers = "Tickers";
 
-            if (this.request.Params.ContainsKey(Tickers))
-            {
-
-
-                this.request.Params[Tickers]= (List<string>)this.request.Params[Tickers];
-            
-            
-            
-            }
-            else { throw new Exception(String.Format(ConfigError.MissingKey, Tickers));};
-
-
-      
+            if (request.Params.ContainsKey(Tickers))
+                request.Params[Tickers] = (List<string>) request.Params[Tickers];
+            else
+                throw new Exception(string.Format(ConfigError.MissingKey, Tickers));
+            ;
         }
 
         private void SetRequestType()
         {
-            string Type = "Type";
+            var Type = "Type";
 
             if (config.ContainsKey(Type))
-            {
-                this.request.Type = this.config[Type].ToString();
-            }
-            else { throw new Exception(String.Format(ConfigError.MissingKey, Type)); };
-
+                request.Type = config[Type].ToString();
+            else
+                throw new Exception(string.Format(ConfigError.MissingKey, Type));
+            ;
         }
 
         private void BuildUrl()
         {
-
         }
-       
+
 
         private void SetParams()
         {
-            string Params = "Params";
+            var Params = "Params";
 
             if (config.ContainsKey(Params))
             {
-                if (this.config[Params].GetType() == typeof(Dictionary<string, object>))
-                {
-
-
-                    this.request.Params = (Dictionary<string, object>)this.config[Params];
-                    
-                }
+                if (config[Params].GetType() == typeof(Dictionary<string, object>))
+                    request.Params = (Dictionary<string, object>) config[Params];
             }
-            else { throw new Exception(String.Format(ConfigError.MissingKey, Params)); };
+            else
+            {
+                throw new Exception(string.Format(ConfigError.MissingKey, Params));
+            }
+
+            ;
         }
 
 
         private void UnWrapParams()
         {
-
-            
-            this.request.Params["Dates"] = (List<string>)this.request.Params["Dates"];
+            request.Params["Dates"] = (List<string>) request.Params["Dates"];
             SetDateFormat();
             SetProductType();
-
         }
+
         private void SetDateFormat()
         {
             var DateList = new List<string>();
-            
-            foreach(string dte in (List<string>)this.request.Params["Dates"])
+
+            foreach (var dte in (List<string>) request.Params["Dates"])
             {
-  
                 IYahooDateFormat iEXDate = new Date(dte);
 
                 DateList.Add(iEXDate.ToTimeStamp().ToString());
             }
 
-            this.request.Params["Dates"] = DateList;
-
+            request.Params["Dates"] = DateList;
         }
 
         private void SetProductType()
         {
-            string productType = "ProductType";
-            if (this.request.Params.ContainsKey(productType))
+            var productType = "ProductType";
+            if (request.Params.ContainsKey(productType))
             {
-                char separator = '/';
-                string product_type = this.request.Params[productType].ToString();
-                string[] args = product_type.Split(separator);
-                this.request.Params.Add("Product",args[0]);
-                this.request.Params.Add("Type", args[1]);
-
+                var separator = '/';
+                var product_type = request.Params[productType].ToString();
+                var args = product_type.Split(separator);
+                request.Params.Add("Product", args[0]);
+                request.Params.Add("Type", args[1]);
             }
-            else { throw new Exception(String.Format(ConfigError.MissingKey, productType));}
+            else
+            {
+                throw new Exception(string.Format(ConfigError.MissingKey, productType));
+            }
         }
-
-
 
 
         public override async Task<string> Post()
         {
-            HttpClient client = new HttpClient();
+            var client = new HttpClient();
 
             try
             {
-                HttpResponseMessage message = await client.PostAsync(RequestContent.Url, RequestContent.HttpContent);
+                var message = await client.PostAsync(RequestContent.Url, RequestContent.HttpContent);
                 return await message.Content.ReadAsStringAsync();
             }
             catch (Exception _exception)
             {
                 Console.WriteLine(_exception);
             }
+
             return null;
         }
 
         public override async Task<string> Get()
         {
-            HttpClient client = new HttpClient();
+            var client = new HttpClient();
             try
             {
-                HttpResponseMessage message = await client.GetAsync("https://sandbox.iexapis.com/stable/stock/aapl/options/202001?token=Tsk_bbe66f58b6d149f59a9af4eb83bfc7f5");
-                
+                var message =
+                    await client.GetAsync(
+                        "https://sandbox.iexapis.com/stable/stock/aapl/options/202001?token=Tsk_bbe66f58b6d149f59a9af4eb83bfc7f5");
+
                 Console.WriteLine(message.Content.ToString());
                 return await message.Content.ReadAsStringAsync();
-
             }
             catch (Exception _exception)
             {
                 Console.WriteLine(_exception);
             }
+
             return null;
         }
-
-
-
-
     }
-
-   
-
-
-
 }
-
-

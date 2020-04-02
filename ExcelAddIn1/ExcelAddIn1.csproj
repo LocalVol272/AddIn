@@ -203,6 +203,7 @@
     <Compile Include="PricerObjects\RequestErrors.cs" />
     <Compile Include="PricerObjects\Security.cs" />
     <Compile Include="PricerObjects\Stock.cs" />
+    <Compile Include="PricerObjects\Ticker.cs" />
     <Compile Include="PricerObjects\YahooCloud.cs" />
     <Compile Include="PricingCalculation\CubicSplines.cs" />
     <Compile Include="PricingCalculation\Grid.cs" />
@@ -261,6 +262,7 @@
   <PropertyGroup>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
+
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Include additional build rules for an Office application add-in. -->
