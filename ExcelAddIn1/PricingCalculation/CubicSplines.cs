@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace ExcelAddIn1.PricingCalculation
 {
@@ -42,7 +42,7 @@ namespace ExcelAddIn1.PricingCalculation
         // Find the i and i+1 such that xInit[i] < x < xInit[i+1] :
         private int _NextI(double x)
         {
-            if (x < xInit[_previousI]) throw new ArgumentException("X values must be sorted !");
+            
 
             while (_previousI < xInit.Length - 2 && x > xInit[_previousI + 1]) _previousI++;
 
