@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Extreme.Mathematics;
+using Extreme.Statistics;
 
 namespace ExcelAddIn1.PricingCalculation
 {
@@ -140,6 +143,19 @@ namespace ExcelAddIn1.PricingCalculation
             }
 
             return rStar_;
+        }
+
+        public static List<double> PolynomialRegression(double[] x, double[] y, int degree)
+        {
+            Vector<double> x_regress = Vector.Create(x);
+            Vector<double> y_regress = Vector.Create(y);
+
+            var model = new PolynomialRegressionModel(x_regress, y_regress, 2);
+            model.Fit();
+
+            List<double> coeff = model.Parameters.Select(param => param.Value).ToList();
+            coeff.Reverse();
+            return coeff;
         }
     }
 }
