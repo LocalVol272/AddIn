@@ -72,5 +72,26 @@ namespace ExcelAddIn1.PricingCalculation
                     Math.Sqrt((dT[i, j] + r * strikes[i] * dK[i, j]) / 2 * Math.Pow(strikes[i], 2) * dK2[i, j]);
             return locvol;
         }
+
+        public double[,] BSPD(double S, double r, double[,] VolLocale, string type)
+        {
+            double[,] price = new double[nbRows, nbCols];
+            double K;
+            double T;
+            double sigma;
+            for (int i = 0; i < nbRows; i++)
+            {
+                K = strikes[i];
+                for (int j = 0; j < nbCols; j++)
+                {
+                    T = tenors[j];
+                    sigma = VolLocale[i, j];
+                    BlackScholes bs = new BlackScholes(S, K, T, r, sigma, type);
+                    price[i, j] = bs.Compute();
+
+                }
+            }
+            return price;
+        }
     }
 }
