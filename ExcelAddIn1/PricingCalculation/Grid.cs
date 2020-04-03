@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace ExcelAddIn1.PricingCalculation
 {
-    internal class Grid
+    class Grid
     {
         private readonly double[,] prices;
 
-        public Grid(double?[,] source, double[] tenors, double[] strikes)
+        public Grid(double[,] source, double[] tenors, double[] strikes)
         {
             nbRows = source.GetLength(0);
             nbCols = source.GetLength(1);
             //Check if it contains null values and apply cubic spline if its the case
-            prices = RemoveHoles(source);
+            prices = source;
             this.tenors = tenors;
             this.strikes = strikes;
             if (nbCols != tenors.Length)
@@ -32,30 +32,49 @@ namespace ExcelAddIn1.PricingCalculation
             set => prices[i, j] = value;
         }
 
-        private double[,] RemoveHoles(double?[,] source)
+        public static Dictionary<string, double[,]> Sensitivities(double[,] price, double[] listK, double[] listT)
         {
-            var sourceWithoutNulls = new double[nbRows, nbCols];
-            ///////////////////////////////////////////////////////////
-            ////////////////CUBIC SPLINE/////////////////////////////
-            ///////////////////////////////////////////////////////////
+     
+            int nrows = listK.Length;
+            int ncols = listT.Length;
 
-            return sourceWithoutNulls;
-        }
+            var dK = new double[nrows,ncols];
+            var dT = new double[nrows, ncols];
+            var dK2 = new double[nrows, ncols];
 
-        public Dictionary<string, double[,]> Sensitivities()
-        {
-            var dK = new double[nbRows - 1, nbCols - 1];
-            var dT = new double[nbRows - 1, nbCols - 1];
-            var dK2 = new double[nbRows - 1, nbCols - 1];
-            for (var t = nbCols - 1; t > 0; t--)
-            for (var k = nbRows - 1; k > 1; k--)
+            for (var t = 0; t < ncols; t++)
             {
-                dT[k - 1, t - 1] = (this[k, t] - this[k, t - 1]) / (tenors[t] - tenors[t - 1]);
-                dK[k - 1, t - 1] = (this[k, t] - this[k - 1, t]) / (strikes[k] - strikes[k - 1]);
-                dK2[k - 1, t - 1] = (this[k, t] - 2 * this[k - 1, t] + this[k - 2, t]) /
-                                    Math.Pow(strikes[k] - strikes[k - 1], 2);
-            }
+                // t is fixed, get spline interpolation of (K,Price):
+                //First get and Price[i]:
+                double[] tabP_fixedT = new double[nrows];
 
+                for (int j = 0; j < nrows; j++)
+                {
+                    tabP_fixedT[j] = price[j, t];
+                }
+                //Then build cubic spline projection :
+
+                CubicSpline splineP_fixedT = new CubicSpline(listK, tabP_fixedT);
+
+                for (var k =0; k <nrows; k++)
+                {
+                    // Then get Price for fixed k :
+                    double[] tabP_fixedK = new double[ncols];
+
+                    for (int j = 0; j < ncols; j++)
+                    {
+                        tabP_fixedK[j] = price[k, j];
+                    }
+                    //Then build cubic spline projection :
+                    CubicSpline splineP_fixedK = new CubicSpline(listT, tabP_fixedK);
+
+
+                    //Finally collect sensitivities
+                    dT[k, t] = splineP_fixedK.SpotEstimateSlope(listT[t]);
+                    dK[k, t] = splineP_fixedT.SpotEstimateSlope(listK[k]);
+                    dK2[k, t] = splineP_fixedT.SpotEstimateSecondDeriv(listK[k]);
+                }
+            }
             var dict = new Dictionary<string, double[,]>();
             dict.Add("dK", dK);
             dict.Add("dT", dT);
@@ -63,13 +82,29 @@ namespace ExcelAddIn1.PricingCalculation
             return dict;
         }
 
-        public double[,] LocalVolatility(double[,] dT, double[,] dK, double[,] dK2, double r)
+        public static double[,] LocalVolatility(double[,] price, double[] listK, double[] listT, double r)
         {
-            var locvol = new double[nbRows - 1, nbCols - 1];
-            for (var i = 0; i < nbRows - 1; i++)
-            for (var j = 0; j < nbCols; j++)
-                locvol[i, j] =
-                    Math.Sqrt((dT[i, j] + r * strikes[i] * dK[i, j]) / 2 * Math.Pow(strikes[i], 2) * dK2[i, j]);
+            var sensiDict = Grid.Sensitivities(price, listK, listT);
+            int nrows = listK.Length;
+            int ncols = listT.Length;
+
+            var locvol = new double[nrows, ncols];
+            double[,] dT = sensiDict["dT"];
+            double[,] dK = sensiDict["dK"];
+            double[,] dK2 = sensiDict["dK2"];
+
+            for (int i = 0; i < nrows; i++)
+            {
+                for (int j = 0; j < ncols; j++)
+                {
+                    Console.WriteLine("dT(" + i + "," + j + ") : " + dT[i, j]);
+                    Console.WriteLine("dK(" + i + "," + j + ") : " + dK[i, j]);
+                    Console.WriteLine("dk2(" + i + "," + j + ") : " + dK2[i, j]);
+                    locvol[i, j] = Math.Sqrt((dT[i, j] + r * listK[i] * dK[i, j]-r*price[i,j]) /  0.5*Math.Pow(listK[i], 2) * dK2[i, j]);
+                }
+            }
+
+                    
             return locvol;
         }
 
