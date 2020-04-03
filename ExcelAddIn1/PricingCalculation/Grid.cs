@@ -54,6 +54,8 @@ namespace ExcelAddIn1.PricingCalculation
                 {
                     if (price[j, t] > 0.0)
                     {
+                        Array.Resize(ref tabP_fixedT, i + 1);
+                        Array.Resize(ref tempK, i + 1);
                         tabP_fixedT[i] = price[j, t];
                         tempK[i] = listK[j];
                         i++;
@@ -68,7 +70,7 @@ namespace ExcelAddIn1.PricingCalculation
                 for (var k =0; k <nrows; k++)
                 {
                     // Then get Price for fixed k :
-                    double[] tabP_fixedK = new double[ncols];
+                    double[] tabP_fixedK = new double[] { };
                     double[] tempT = new double[] { };
                     i = 0;
 
@@ -76,6 +78,8 @@ namespace ExcelAddIn1.PricingCalculation
                     {
                         if(price[k, j]>0.0)
                         {
+                            Array.Resize(ref tabP_fixedK, i + 1);
+                            Array.Resize(ref tempT, i + 1);
                             tabP_fixedK[i] = price[k, j];
                             tempT[i] = listT[j];
                             i++;
