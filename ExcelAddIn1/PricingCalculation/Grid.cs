@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using MathNet.Numerics.LinearAlgebra.Double;
+using MathNet.Numerics.LinearAlgebra.Factorization;
 
+//To add from NuGet : MathNet
 namespace ExcelAddIn1.PricingCalculation
 {
     class Grid
@@ -31,14 +34,42 @@ namespace ExcelAddIn1.PricingCalculation
             get => prices[i, j];
             set => prices[i, j] = value;
         }
+        //Polynomial fitting
+        public static double[] Polyfit(double[] x, double[] y, int degree)
+        {
+            var v = new DenseMatrix(x.Length, degree + 1);
+            for (int i = 0; i < v.RowCount; i++)
+                for (int j = 0; j <= degree; j++) v[i, j] = Math.Pow(x[i], j);
+            var yv = new DenseVector(y).ToColumnMatrix();
+            QR<double> qr = v.QR();
+            var r = qr.R.SubMatrix(0, degree + 1, 0, degree + 1);
+            var q = v.Multiply(r.Inverse());
+            var p = r.Inverse().Multiply(q.TransposeThisAndMultiply(yv));
+            return p.Column(0).ToArray();
+        }
+        
+        //Getting 1st or 2nd derivative from Polyfit output at a given point x
+        public static double PolynomialDerivative(double[] coefs , double x , int derivOrder)
+        {
+            double res = 0.0;
+            if (derivOrder == 1)
+            {
+                res = 3 * coefs[3] * x * x + 2 * coefs[2]*x + coefs[1];
+            }
+            if (derivOrder == 2)
+            {
+                res = 6 * coefs[3]*x+2* coefs[2];
+            }
+            return res;
+        }
 
         public static Dictionary<string, double[,]> Sensitivities(double[,] price, double[] listK, double[] listT)
         {
-     
+
             int nrows = listK.Length;
             int ncols = listT.Length;
 
-            var dK = new double[nrows,ncols];
+            var dK = new double[nrows, ncols];
             var dT = new double[nrows, ncols];
             var dK2 = new double[nrows, ncols];
 
@@ -65,9 +96,11 @@ namespace ExcelAddIn1.PricingCalculation
                 }
                 //Then build cubic spline projection :
 
-                CubicSpline splineP_fixedT = new CubicSpline(tempK, tabP_fixedT);
+                //CubicSpline splineP_fixedT = new CubicSpline(tempK, tabP_fixedT);
 
-                for (var k =0; k <nrows; k++)
+                double[] coefs_fixedT = Grid.Polyfit(tempK, tabP_fixedT,3);
+
+                for (var k = 0; k < nrows; k++)
                 {
                     // Then get Price for fixed k :
                     double[] tabP_fixedK = new double[] { };
@@ -76,7 +109,7 @@ namespace ExcelAddIn1.PricingCalculation
 
                     for (int j = 0; j < ncols; j++)
                     {
-                        if(price[k, j]>0.0)
+                        if (price[k, j] > 0.0)
                         {
                             Array.Resize(ref tabP_fixedK, i + 1);
                             Array.Resize(ref tempT, i + 1);
@@ -87,13 +120,17 @@ namespace ExcelAddIn1.PricingCalculation
 
                     }
                     //Then build cubic spline projection :
-                    CubicSpline splineP_fixedK = new CubicSpline(tempT, tabP_fixedK);
-
+                    //CubicSpline splineP_fixedK = new CubicSpline(tempT, tabP_fixedK);
+                    double[] coefs_fixedK = Grid.Polyfit(tempT, tabP_fixedK, 3);
 
                     //Finally collect sensitivities
-                    dT[k, t] = splineP_fixedK.SpotEstimateSlope(listT[t]);
-                    dK[k, t] = splineP_fixedT.SpotEstimateSlope(listK[k]);
-                    dK2[k, t] = splineP_fixedT.SpotEstimateSecondDeriv(listK[k]);
+                    //dT[k, t] = splineP_fixedK.SpotEstimateSlope(listT[t]);
+                    //dK[k, t] = splineP_fixedT.SpotEstimateSlope(listK[k]);
+                    //dK2[k, t] = splineP_fixedT.SpotEstimateSecondDeriv(listK[k]);
+                    dT[k, t] = Grid.PolynomialDerivative(coefs_fixedK, listT[t],1);
+                    dK[k, t] = Grid.PolynomialDerivative(coefs_fixedT, listK[k], 1);
+                    dK2[k, t] = Grid.PolynomialDerivative(coefs_fixedK, listK[k], 2);
+
                 }
             }
             var dict = new Dictionary<string, double[,]>();
