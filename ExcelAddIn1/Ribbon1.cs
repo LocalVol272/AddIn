@@ -12,6 +12,11 @@ namespace ExcelAddIn1
     {
         private int _lastRow;
         private Worksheet _newWorksheet;
+        private double _spot;
+        private string _type;
+        private double _r;
+        private double _moneyness;
+
 
         private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
         {
@@ -129,7 +134,8 @@ namespace ExcelAddIn1
 
         private void comboBox3_TextChanged(object sender, RibbonControlEventArgs e)
         {
-            _newWorksheet.Range["B3"].Value = comboBox3.Text;
+            _type = comboBox3.Text;
+            _newWorksheet.Range["B3"].Value = _type;
         }
 
         private void button4_Click(object sender, RibbonControlEventArgs e)
@@ -138,7 +144,8 @@ namespace ExcelAddIn1
             var ticker = comboBox2.Text;
             var action = new Stock(ticker);
             action.Token = new Token("Tsk_bbe66f58b6d149f59a9af4eb83bfc7f5");
-            _newWorksheet.Range["B2"].Value = action.GetLastPrice();
+            _spot = action.GetLastPrice();
+            _newWorksheet.Range["B2"].Value = _spot;
 
             var res = GetOptions(ticker);
 
@@ -152,7 +159,7 @@ namespace ExcelAddIn1
 
             var gv = new GridView(_newWorksheet, strikeData, tenorData);
             gv.DisplayGrid(7, 3, priceData);
-
+     
             _lastRow = 11 + strikeData.Length;
             Globals.ThisAddIn.Application.ScreenUpdating = true;
         }
@@ -282,6 +289,16 @@ namespace ExcelAddIn1
 
 
             Globals.ThisAddIn.Application.ScreenUpdating = true;
+        }
+
+        private void editBox1_TextChanged_1(object sender, RibbonControlEventArgs e)
+        {
+            _moneyness = Convert.ToDouble(editBox1.Text);
+        }
+
+        private void editBox2_TextChanged(object sender, RibbonControlEventArgs e)
+        {
+            _r = Convert.ToDouble(editBox2.Text);
         }
     }
 }
