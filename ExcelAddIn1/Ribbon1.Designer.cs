@@ -37,23 +37,26 @@ namespace ExcelAddIn1
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Ribbon1));
             this.tab1 = this.Factory.CreateRibbonTab();
             this.group1 = this.Factory.CreateRibbonGroup();
+            this.button2 = this.Factory.CreateRibbonButton();
+            this.button1 = this.Factory.CreateRibbonButton();
             this.group2 = this.Factory.CreateRibbonGroup();
             this.comboBox2 = this.Factory.CreateRibbonComboBox();
             this.comboBox3 = this.Factory.CreateRibbonComboBox();
+            this.button4 = this.Factory.CreateRibbonButton();
             this.group3 = this.Factory.CreateRibbonGroup();
             this.editBox1 = this.Factory.CreateRibbonEditBox();
             this.editBox2 = this.Factory.CreateRibbonEditBox();
-            this.group4 = this.Factory.CreateRibbonGroup();
-            this.button2 = this.Factory.CreateRibbonButton();
-            this.button1 = this.Factory.CreateRibbonButton();
-            this.button4 = this.Factory.CreateRibbonButton();
             this.Price = this.Factory.CreateRibbonButton();
+            this.group4 = this.Factory.CreateRibbonGroup();
             this.button3 = this.Factory.CreateRibbonButton();
+            this.group5 = this.Factory.CreateRibbonGroup();
+            this.button5 = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.group2.SuspendLayout();
             this.group3.SuspendLayout();
             this.group4.SuspendLayout();
+            this.group5.SuspendLayout();
             this.SuspendLayout();
             // 
             // tab1
@@ -62,6 +65,7 @@ namespace ExcelAddIn1
             this.tab1.Groups.Add(this.group2);
             this.tab1.Groups.Add(this.group3);
             this.tab1.Groups.Add(this.group4);
+            this.tab1.Groups.Add(this.group5);
             this.tab1.Label = "Local Volatility Toolkit";
             this.tab1.Name = "tab1";
             // 
@@ -71,6 +75,20 @@ namespace ExcelAddIn1
             this.group1.Items.Add(this.button1);
             this.group1.Label = "Initialization";
             this.group1.Name = "group1";
+            // 
+            // button2
+            // 
+            this.button2.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
+            this.button2.Label = "New Worksheet";
+            this.button2.Name = "button2";
+            this.button2.ShowImage = true;
+            this.button2.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Label = "";
+            this.button1.Name = "button1";
             // 
             // group2
             // 
@@ -94,6 +112,15 @@ namespace ExcelAddIn1
             this.comboBox3.Text = null;
             this.comboBox3.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox3_TextChanged);
             // 
+            // button4
+            // 
+            this.button4.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
+            this.button4.Label = "Import Data";
+            this.button4.Name = "button4";
+            this.button4.ShowImage = true;
+            this.button4.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button4_Click);
+            // 
             // group3
             // 
             this.group3.Items.Add(this.editBox1);
@@ -116,35 +143,6 @@ namespace ExcelAddIn1
             this.editBox2.Text = null;
             this.editBox2.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.editBox2_TextChanged);
             // 
-            // group4
-            // 
-            this.group4.Items.Add(this.button3);
-            this.group4.Label = "Pricing";
-            this.group4.Name = "group4";
-            // 
-            // button2
-            // 
-            this.button2.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
-            this.button2.Label = "New Worksheet";
-            this.button2.Name = "button2";
-            this.button2.ShowImage = true;
-            this.button2.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button2_Click);
-            // 
-            // button1
-            // 
-            this.button1.Label = "";
-            this.button1.Name = "button1";
-            // 
-            // button4
-            // 
-            this.button4.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
-            this.button4.Label = "Import Data";
-            this.button4.Name = "button4";
-            this.button4.ShowImage = true;
-            this.button4.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button4_Click);
-            // 
             // Price
             // 
             this.Price.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -154,6 +152,12 @@ namespace ExcelAddIn1
             this.Price.ShowImage = true;
             this.Price.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.Price_Click);
             // 
+            // group4
+            // 
+            this.group4.Items.Add(this.button3);
+            this.group4.Label = "Pricing";
+            this.group4.Name = "group4";
+            // 
             // button3
             // 
             this.button3.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -162,6 +166,21 @@ namespace ExcelAddIn1
             this.button3.Name = "button3";
             this.button3.ShowImage = true;
             this.button3.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button3_Click);
+            // 
+            // group5
+            // 
+            this.group5.Items.Add(this.button5);
+            this.group5.Label = "All in One Click";
+            this.group5.Name = "group5";
+            // 
+            // button5
+            // 
+            this.button5.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.button5.Image = ((System.Drawing.Image)(resources.GetObject("button5.Image")));
+            this.button5.Label = "Compute all";
+            this.button5.Name = "button5";
+            this.button5.ShowImage = true;
+            this.button5.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button5_Click);
             // 
             // Ribbon1
             // 
@@ -179,6 +198,8 @@ namespace ExcelAddIn1
             this.group3.PerformLayout();
             this.group4.ResumeLayout(false);
             this.group4.PerformLayout();
+            this.group5.ResumeLayout(false);
+            this.group5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -199,6 +220,8 @@ namespace ExcelAddIn1
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group4;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton button3;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton button4;
+        internal Microsoft.Office.Tools.Ribbon.RibbonGroup group5;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton button5;
     }
 
     partial class ThisRibbonCollection

@@ -204,6 +204,7 @@
     <Compile Include="PricerObjects\Security.cs" />
     <Compile Include="PricerObjects\Stock.cs" />
     <Compile Include="PricerObjects\YahooCloud.cs" />
+    <Compile Include="PricingCalculation\BlackScholes.cs" />
     <Compile Include="PricingCalculation\CubicSplines.cs" />
     <Compile Include="PricingCalculation\Grid.cs" />
     <Compile Include="PricingCalculation\Matrix.cs" />
@@ -266,7 +267,7 @@
     <ManifestKeyFile>ExcelAddIn1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>72DE8AB375FB7539FB80FC4D6DED301E8C946F15</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>F90E93E27205C38AE1E61FA24E73739F70C183F3</ManifestCertificateThumbprint>
   </PropertyGroup>
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

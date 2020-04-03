@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Forms;
 using ExcelAddIn1.PricerObjects;
 using ExcelAddIn1.PricingCalculation;
 using Microsoft.Office.Interop.Excel;
@@ -48,11 +49,18 @@ namespace ExcelAddIn1
         private void button2_Click(object sender, RibbonControlEventArgs e)
         {
             Globals.ThisAddIn.Application.ScreenUpdating = false;
+            CleanRibbon();
             _newWorksheet = Globals.ThisAddIn.Application.Worksheets.Add();
             NewWorksheet.Creation(_newWorksheet, DateTime.Now.ToString("HH:mm:ss"));
 
             _newWorksheet.EnableCalculation = true;
             Globals.ThisAddIn.Application.ScreenUpdating = true;
+        }
+
+        private void CleanRibbon()
+        {
+            comboBox3.Text = "";
+            comboBox2.Text = "";
         }
 
         private void editBox1_TextChanged(object sender, RibbonControlEventArgs e)
@@ -112,9 +120,6 @@ namespace ExcelAddIn1
                     _mOptionMarketPrice[k - indexBorneInf, t] = _optionMarketPrice[k, t];
                 }
             }
-            
-
-
         }
 
         private void FillTicker(string country)
@@ -156,7 +161,35 @@ namespace ExcelAddIn1
             var ticker = comboBox2.Text;
             var action = new Stock(ticker);
             action.Token = new Token("Tsk_bbe66f58b6d149f59a9af4eb83bfc7f5");
-            _spot = action.GetLastPrice();
+            try
+            {
+                if (_newWorksheet == null) throw new Exception("WORKSHEET");
+                if (_newWorksheet.Range["B1"].Value == null) throw new Exception("TICKER");
+                if (_newWorksheet.Range["B3"].Value == null) throw new Exception("OPTION");
+                _spot = action.GetLastPrice();
+            }
+            catch (Exception exception)
+            {
+                switch (exception.Message)
+                {
+                    case "WORKSHEET":
+                        MessageBox.Show("Merci de créer une nouvelle feuille.");
+                        Globals.ThisAddIn.Application.ScreenUpdating = true;
+                        return;
+                    case "TICKER":
+                        MessageBox.Show("Vous devez saisir un ticker.");
+                        Globals.ThisAddIn.Application.ScreenUpdating = true;
+                        return;
+                    case "OPTION":
+                        MessageBox.Show("Vous devez saisir le type d'Option(Call ou Put).");
+                        Globals.ThisAddIn.Application.ScreenUpdating = true;
+                        return;
+                    default:
+                        MessageBox.Show("Il y a une erreur");
+                        return;
+                }
+            }
+
             _newWorksheet.Range["B2"].Value = _spot;
 
             var res = GetOptions(ticker);
@@ -243,7 +276,7 @@ namespace ExcelAddIn1
             List<string> TickerList = new List<string>() {ticker};
             Dictionary<string, object> Params = new Dictionary<string, object>();
             List<string> DateList = new List<string>() { };
-
+            
             Params.Add("ProductType", "Option/" + comboBox3.Text);
             Params.Add("Tickers", TickerList);
             Params.Add("Dates", DateList);
@@ -294,6 +327,11 @@ namespace ExcelAddIn1
         private void editBox2_TextChanged(object sender, RibbonControlEventArgs e)
         {
             _r = Convert.ToDouble(editBox2.Text);
+        }
+
+        private void button5_Click(object sender, RibbonControlEventArgs e)
+        {
+
         }
     }
 }

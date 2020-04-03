@@ -1,3 +1,5 @@
+using System;
+using System.Windows.Forms;
 using Microsoft.Office.Interop.Excel;
 
 namespace ExcelAddIn1
@@ -12,7 +14,15 @@ namespace ExcelAddIn1
             _newWorksheet = newWorksheet;
             _creationSheetDate = creationSheetDate;
             var nameSheet = "LocalVolatilityWS_" + _creationSheetDate.Replace(":", "_");
-            _newWorksheet.Name = nameSheet;
+            try
+            {
+                _newWorksheet.Name = nameSheet;
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message + " Merci d'essayer à nouveau.");
+            }
+            
             VisualizeData();
         }
 

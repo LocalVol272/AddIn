@@ -103,7 +103,7 @@ namespace ExcelAddIn1.PricingCalculation
             return dict;
         }
 
-        public static double[,] LocalVolatility(double[,] price, double[] listK, double[] listT, double r)
+        public double[,] LocalVolatility(double[,] price, double[] listK, double[] listT, double r)
         {
             var sensiDict = Grid.Sensitivities(price, listK, listT);
             int nrows = listK.Length;
