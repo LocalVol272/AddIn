@@ -46,27 +46,44 @@ namespace ExcelAddIn1.PricingCalculation
             {
                 // t is fixed, get spline interpolation of (K,Price):
                 //First get and Price[i]:
-                double[] tabP_fixedT = new double[nrows];
+                double[] tabP_fixedT = new double[] { };
+                double[] tempK = new double[] { };
+                int i = 0;
 
                 for (int j = 0; j < nrows; j++)
                 {
-                    tabP_fixedT[j] = price[j, t];
+                    if (price[j, t] > 0.0)
+                    {
+                        tabP_fixedT[i] = price[j, t];
+                        tempK[i] = listK[j];
+                        i++;
+
+                    }
+
                 }
                 //Then build cubic spline projection :
 
-                CubicSpline splineP_fixedT = new CubicSpline(listK, tabP_fixedT);
+                CubicSpline splineP_fixedT = new CubicSpline(tempK, tabP_fixedT);
 
                 for (var k =0; k <nrows; k++)
                 {
                     // Then get Price for fixed k :
                     double[] tabP_fixedK = new double[ncols];
+                    double[] tempT = new double[] { };
+                    i = 0;
 
                     for (int j = 0; j < ncols; j++)
                     {
-                        tabP_fixedK[j] = price[k, j];
+                        if(price[k, j]>0)
+                        {
+                            tabP_fixedK[i] = price[k, j];
+                            tempT[i] = listT[j];
+                            i++;
+                        }
+
                     }
                     //Then build cubic spline projection :
-                    CubicSpline splineP_fixedK = new CubicSpline(listT, tabP_fixedK);
+                    CubicSpline splineP_fixedK = new CubicSpline(tempT, tabP_fixedK);
 
 
                     //Finally collect sensitivities
