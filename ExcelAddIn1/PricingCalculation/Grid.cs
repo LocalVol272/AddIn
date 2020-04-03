@@ -74,7 +74,7 @@ namespace ExcelAddIn1.PricingCalculation
 
                     for (int j = 0; j < ncols; j++)
                     {
-                        if(price[k, j]>0)
+                        if(price[k, j]>0.0)
                         {
                             tabP_fixedK[i] = price[k, j];
                             tempT[i] = listT[j];
