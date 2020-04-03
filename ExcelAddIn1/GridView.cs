@@ -7,6 +7,7 @@ namespace ExcelAddIn1
         private readonly double[] _strikes;
         private readonly double[] _tenors;
         private readonly Worksheet _worksheet;
+        private int _wsIndex = 1;
 
         public GridView(Worksheet ws, double[] strike, double[] tenors)
         {
@@ -112,7 +113,8 @@ namespace ExcelAddIn1
             VolSurf.ChartType = XlChartType.xlSurface;
             VolSurf.ChartStyle = 311;
             VolSurf.ChartColor = 21;
-            VolSurf.Location(XlChartLocation.xlLocationAsNewSheet, "Volatility Surface");
+            VolSurf.Location(XlChartLocation.xlLocationAsNewSheet, "Volatility Surface" + _wsIndex);
+            _wsIndex++;
         }
     }
 }
