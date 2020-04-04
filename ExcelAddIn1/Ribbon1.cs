@@ -293,7 +293,6 @@ namespace ExcelAddIn1
 
             priceFinal = new double[strikes.Count, maturities.Count- ColumnToRemoveIndex.Count];
 
-
             DeleteColumns(maturities, priceFinal, price, ColumnToRemoveIndex, ColumnToRemoveIndex);
             int cptRow = 0;
             for (int i = 0; i < priceFinal.GetLength(0); i++)
@@ -321,26 +320,59 @@ namespace ExcelAddIn1
                     }
                 }
             }
-            priceFinal = new double[strikes.Count-RowToRemoveIndex.Count, maturities.Count];
+            
 
-            DeleteRows(strikes, priceFinal, price, RowToRemoveIndex, RowToRemoveDate);
+            List<List<double>> list = new List<List<double>>();
+            for (int i = 1; i < priceFinal.GetLength(0)+1; i++)
+            {
+                List<double> list1 = new List<double>();
+                for (int j = 1; j < priceFinal.GetLength(1)+1; j++)
+                {
+                    list1.Add(priceFinal[i-1, j-1]);
+                }
+                list.Add(list1);
+            }
+
+            foreach (var indice in RowToRemoveIndex.OrderByDescending(v => v).Select((item => Convert.ToInt32(item))))
+            {
+                list.RemoveAt(indice);
+            }
+
+            priceFinal = new double[strikes.Count - RowToRemoveIndex.Count, maturities.Count];
+            foreach (var item in list)
+            {
+                foreach (var item1 in item)
+                {
+                    priceFinal[list.IndexOf(item), item.IndexOf(item1)] = item1;
+                }
+            }
+
+            foreach (var item in RowToRemoveDate)
+            {
+                    strikes.Remove(item);
+            }
+
+            //var priceFinal2 = new double[strikes.Count - RowToRemoveIndex.Count, maturities.Count];
+            //DeleteRows(strikes, priceFinal2, priceFinal, RowToRemoveIndex, RowToRemoveDate);
+
             return strikes;
         }
 
         private static void DeleteRows(List<double> strikes, double[,] priceFinal, double[,] price, List<double> RowToRemoveIndex,
             List<double> RowToRemoveDate)
         {
-            int u = 1;
-
+            int u=1;
+            int cpt = -1;
             for (int i = 1; i < price.GetLength(0); i++)
             {
                 bool existR = false;
-                foreach (var element in RowToRemoveIndex.Where(element => i == element))
+                foreach (var element in RowToRemoveIndex.Where(element => (i-1) == element))
                 {
-                    foreach (var date in RowToRemoveDate.Where(date => i == strikes.IndexOf(date)))
+                    foreach (var date in RowToRemoveDate.Where(date => (i - 1) == strikes.IndexOf(date)))
                     {
                         strikes.Remove(date);
                         existR = true;
+                        u = u + 1;
                         break;
                     }
                 }
@@ -348,14 +380,14 @@ namespace ExcelAddIn1
                 if (existR.Equals(true))
                     continue;
 
+                cpt = cpt + 1;
                 for (int j = 1; j < price.GetLength(1); j++)
                 {
-                    priceFinal[i - 1, j - 1] = price[i, j];
+                    
+                    priceFinal[cpt, j - 1] = price[i, j];
                 }
             }
         }
-
-
 
         private static void DeleteColumns(List<double> maturities, double[,] priceFinal, double[,] price, List<double> RowToRemoveIndex,
             List<double> RowToRemoveDate)
