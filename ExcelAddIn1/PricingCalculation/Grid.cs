@@ -157,7 +157,7 @@ namespace ExcelAddIn1.PricingCalculation
                     Console.WriteLine("dT(" + i + "," + j + ") : " + dT[i, j]);
                     Console.WriteLine("dK(" + i + "," + j + ") : " + dK[i, j]);
                     Console.WriteLine("dk2(" + i + "," + j + ") : " + dK2[i, j]);
-                    locvol[i, j] = Math.Sqrt((dT[i, j] + r * listK[i] * dK[i, j]-r*price[i,j]) /  0.5*Math.Pow(listK[i], 2) * dK2[i, j]);
+                    locvol[i, j] = Math.Sqrt((dT[i, j] + r * listK[i] * dK[i, j]) /  0.5*Math.Pow(listK[i], 2) * dK2[i, j]);
                 }
             }
 
