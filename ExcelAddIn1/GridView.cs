@@ -27,6 +27,7 @@ namespace ExcelAddIn1
 
         private void DisplayStrikes(int rowCoordinate, int columnCoordinate)
         {
+            //affichage des K dans la grid
             var strikesCoord = rowCoordinate + _strikes.Length - 1;
             var strikeRange = _worksheet.Range[_worksheet.Cells[rowCoordinate + 2, columnCoordinate],
                 _worksheet.Cells[strikesCoord + 2, columnCoordinate]];
@@ -48,6 +49,7 @@ namespace ExcelAddIn1
 
         private void DisplayTenors(int rowCoordinate, int columnCoordinate)
         {
+            //affichage des T
             var tenorsCoord = columnCoordinate + _tenors.Length - 1;
             var tenorRange = _worksheet.Range[_worksheet.Cells[rowCoordinate, columnCoordinate + 2],
                 _worksheet.Cells[rowCoordinate, tenorsCoord + 2]];
@@ -86,6 +88,7 @@ namespace ExcelAddIn1
 
         private void DisplayInsideGrid(int rowCoordinate, int columnCoordinate, double[,] data)
         {
+            //affichage des valeurs entre T et K
             for (var i = 0; i < _strikes.Length; i++)
             for (var j = 0; j < _tenors.Length; j++)
                 _worksheet.Cells[rowCoordinate + i + 2, columnCoordinate + j + 2].Value = data[i, j];
@@ -103,6 +106,7 @@ namespace ExcelAddIn1
 
         public void DisplayVolSurface(string title, int rowIndexDataSource, int columnIndexDataSource)
         {
+            //affichage de la surface de vol
             var VolSurfShape = _worksheet.Shapes.AddChart2(Width: 600, Height: 300);
             var VolSurf = VolSurfShape.Chart;
             string creationSheetDate = DateTime.Now.ToString("HH:mm:ss").Replace(":", "_");

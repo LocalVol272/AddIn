@@ -10,6 +10,7 @@ namespace ExcelAddIn1
 
         public static void Creation(Worksheet newWorksheet)
         {
+            //creation d'une nouvelle WS
             _newWorksheet = newWorksheet;
             string creationSheetDate = DateTime.Now.ToString("HH:mm:ss");
             var nameSheet = "LocalVolatilityWS_" + creationSheetDate.Replace(":", "_");
@@ -27,6 +28,7 @@ namespace ExcelAddIn1
 
         private static void VisualizeData()
         {
+            //visualisation des datas
             SetText();
             SetColor();
             _newWorksheet.Columns.AutoFit();

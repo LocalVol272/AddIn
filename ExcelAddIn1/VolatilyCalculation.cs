@@ -10,8 +10,7 @@ namespace ExcelAddIn1
         {
             try
             {
-
-
+                //affichage du tableau
                 details.newWorksheet.Range["B" + details.lastRow].Value = "Volatility Surface";
                 details.newWorksheet.Range["B" + details.lastRow].Font.FontStyle = "Bold";
                 details.newWorksheet.Range["B" + details.lastRow].Font.Underline = true;
@@ -32,6 +31,7 @@ namespace ExcelAddIn1
 
         private static void applyMoneyness(Parameters details)
         {
+            //application du moneyness, pour ecarter des strikes
             double borneInf;
             int indexBorneInf;
             double borneSup;

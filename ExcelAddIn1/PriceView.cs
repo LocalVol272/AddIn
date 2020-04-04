@@ -24,19 +24,20 @@ namespace ExcelAddIn1
             Config.Add("Params", Params);
 
             var test = new Options(Config);
-            var res = test.GetOptions();
+            var res = test.GetOptions(); //on recupere les datas sur les options ici
             return res;
         }
 
         public static List<double> CompteGridDetails(Dictionary<string, Dictionary<string, List<Option>>> res,
             string ticker, out List<double> maturities, out double[,] priceFinalMat)
         {
+            //on va ranger les K et T puis nettoyer les datas
             var strikes = new List<double>();
             maturities = new List<double>();
             MaturityLines(res, ticker, maturities, strikes);
             strikes.Sort();
             maturities.Sort();
-            DataCleanUp(res, ticker, maturities, out priceFinalMat, strikes);
+            DataCleanUp(res, ticker, maturities, out priceFinalMat, strikes); //nettoyage
             return strikes;
         }
 
@@ -59,6 +60,7 @@ namespace ExcelAddIn1
             List<double> maturities, out double[,] priceFinalMat,
             List<double> strikes)
         {
+            //le but est d'enlever les options avec moins de 4 prix, cela permet de diminuer un peu les ecarts
             var ColumnToRemoveIndex = new List<double>();
             var ColumnToRemoveDate = new List<double>();
             var RowToRemoveIndex = new List<double>();

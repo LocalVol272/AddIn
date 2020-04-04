@@ -8,6 +8,7 @@ namespace ExcelAddIn1
     {
         public static bool SecuriseNewWs(Parameters details)
         {
+            //on securuse la WS en cas d'erreur de l'user
             try
             {
                 if (details.newWorksheet == null) throw new Exception("WORKSHEET");

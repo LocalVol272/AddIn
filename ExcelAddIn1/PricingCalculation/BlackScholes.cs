@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExcelAddIn1.PricingCalculation
 {
-    class BlackScholes
+    public class BlackScholes
     {
         private double _S;
         private double _K;
