@@ -228,7 +228,7 @@ namespace ExcelAddIn1
             return newMaturities;
         }
 
-        private static List<double> CompteGridDetails(Dictionary<string, Dictionary<string, List<Option>>> res, string ticker, out List<double> maturities, out double[,] priceFinal)
+        private static List<double> CompteGridDetails(Dictionary<string, Dictionary<string, List<Option>>> res, string ticker, out List<double> maturities, out double[,] priceFinalMat)
         {
             List<double> strikes = new List<double>();
             maturities = new List<double>();
@@ -291,7 +291,7 @@ namespace ExcelAddIn1
             }
 
 
-            priceFinal = new double[strikes.Count, maturities.Count- ColumnToRemoveIndex.Count];
+            var priceFinal = new double[strikes.Count, maturities.Count- ColumnToRemoveIndex.Count];
 
             DeleteColumns(maturities, priceFinal, price, ColumnToRemoveIndex, ColumnToRemoveIndex);
             int cptRow = 0;
@@ -352,8 +352,68 @@ namespace ExcelAddIn1
                     strikes.Remove(item);
             }
 
-            //var priceFinal2 = new double[strikes.Count - RowToRemoveIndex.Count, maturities.Count];
-            //DeleteRows(strikes, priceFinal2, priceFinal, RowToRemoveIndex, RowToRemoveDate);
+
+            for (int i = 0; i < priceFinal.GetLength(1); i++)
+            {
+                cptRow = 0;
+                for (int j = 0; j < priceFinal.GetLength(0); j++)
+                {
+                    double test = priceFinal[j, i];
+                    if (test > 0)
+                    {
+                        cptRow += 1;
+                    }
+                }
+
+                if (cptRow >= 4) continue;
+
+                foreach (var k in maturities)
+                {
+                    double mat = k;
+                    int indexMat = maturities.IndexOf(mat);
+                    if (i == indexMat)
+                    {
+                        ColumnToRemoveIndex.Add(indexMat);
+                        ColumnToRemoveDate.Add(mat);
+                    }
+                }
+            }
+
+
+            List<List<double>> listMat = new List<List<double>>();
+            for (int i = 1; i < priceFinal.GetLength(0) + 1; i++)
+            {
+                List<double> list1 = new List<double>();
+                for (int j = 1; j < priceFinal.GetLength(1) + 1; j++)
+                {
+                    list1.Add(priceFinal[i - 1, j - 1]);
+                }
+                listMat.Add(list1);
+            }
+
+            foreach (var indice in ColumnToRemoveIndex.OrderByDescending(v => v).Select((item => Convert.ToInt32(item))))
+            {
+                foreach (var item in listMat)
+                {
+                    item.RemoveAt(indice);
+                }
+            }
+
+
+            priceFinalMat = new double[strikes.Count, maturities.Count - ColumnToRemoveIndex.Count];
+
+            foreach (var item in listMat)
+            {
+                foreach (var item1 in item)
+                {
+                    priceFinalMat[listMat.IndexOf(item), item.IndexOf(item1)] = item1;
+                }
+            }
+
+            foreach (var item in ColumnToRemoveDate)
+            {
+                maturities.Remove(item);
+            }
 
             return strikes;
         }
