@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace ExcelAddIn1.PricerObjects
 {
-    class Options : DataLoader, IAuthentification
+    public class Options : DataLoader, IAuthentification
     {
         private Token _token;
         private string url;
@@ -71,8 +71,6 @@ namespace ExcelAddIn1.PricerObjects
             Dictionary<string, List<Option>> tempOptionByDates; ;
             List<Option> ListOptions = new List<Option>();
 
-
-
             foreach (string ticker in (List<string>)Request.RequestContent.Params["Tickers"])
             {
                 tempOptionByDates = new Dictionary<string, List<Option>>();
@@ -96,8 +94,6 @@ namespace ExcelAddIn1.PricerObjects
                                 FormatOption(JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>>>(_response), ticker, dte));
                             break;
                     }
-
-
                 }
                 res.Add(ticker, tempOptionByDates);
             }
@@ -128,17 +124,8 @@ namespace ExcelAddIn1.PricerObjects
                 _option = JsonConvert.DeserializeObject<YahooOptionChain>(json);
                 _option.expirationDates.ConvertFromTimestampToString().ForEach(x => res.Add(x));
             }
-            
             return res.Distinct().ToList();
-
-
         }
-
-        
-
-
-
-
 
         private List<Option> FormatOption(Dictionary<string, Dictionary<string, List<Dictionary<string, object>>>> option,string ticker,[Optional]string date)
         {

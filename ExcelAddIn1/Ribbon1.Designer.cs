@@ -49,14 +49,11 @@ namespace ExcelAddIn1
             this.Price = this.Factory.CreateRibbonButton();
             this.group4 = this.Factory.CreateRibbonGroup();
             this.button3 = this.Factory.CreateRibbonButton();
-            this.group5 = this.Factory.CreateRibbonGroup();
-            this.button5 = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.group2.SuspendLayout();
             this.group3.SuspendLayout();
             this.group4.SuspendLayout();
-            this.group5.SuspendLayout();
             this.SuspendLayout();
             // 
             // tab1
@@ -65,7 +62,6 @@ namespace ExcelAddIn1
             this.tab1.Groups.Add(this.group2);
             this.tab1.Groups.Add(this.group3);
             this.tab1.Groups.Add(this.group4);
-            this.tab1.Groups.Add(this.group5);
             this.tab1.Label = "Local Volatility Toolkit";
             this.tab1.Name = "tab1";
             // 
@@ -167,21 +163,6 @@ namespace ExcelAddIn1
             this.button3.ShowImage = true;
             this.button3.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button3_Click);
             // 
-            // group5
-            // 
-            this.group5.Items.Add(this.button5);
-            this.group5.Label = "All in One Click";
-            this.group5.Name = "group5";
-            // 
-            // button5
-            // 
-            this.button5.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.button5.Image = ((System.Drawing.Image)(resources.GetObject("button5.Image")));
-            this.button5.Label = "Compute all";
-            this.button5.Name = "button5";
-            this.button5.ShowImage = true;
-            this.button5.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button5_Click);
-            // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
@@ -198,8 +179,6 @@ namespace ExcelAddIn1
             this.group3.PerformLayout();
             this.group4.ResumeLayout(false);
             this.group4.PerformLayout();
-            this.group5.ResumeLayout(false);
-            this.group5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -220,8 +199,6 @@ namespace ExcelAddIn1
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group4;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton button3;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton button4;
-        internal Microsoft.Office.Tools.Ribbon.RibbonGroup group5;
-        internal Microsoft.Office.Tools.Ribbon.RibbonButton button5;
     }
 
     partial class ThisRibbonCollection

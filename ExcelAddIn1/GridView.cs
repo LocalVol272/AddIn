@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using System;
+using Microsoft.Office.Interop.Excel;
 
 namespace ExcelAddIn1
 {
@@ -104,6 +105,7 @@ namespace ExcelAddIn1
         {
             var VolSurfShape = _worksheet.Shapes.AddChart2(Width: 600, Height: 300);
             var VolSurf = VolSurfShape.Chart;
+            string creationSheetDate = DateTime.Now.ToString("HH:mm:ss").Replace(":", "_");
             VolSurf.HasTitle = true;
             VolSurf.ChartTitle.Text = title;
             Range _cell1 = _worksheet.Cells[rowIndexDataSource, columnIndexDataSource];
@@ -113,7 +115,7 @@ namespace ExcelAddIn1
             VolSurf.ChartType = XlChartType.xlSurface;
             VolSurf.ChartStyle = 311;
             VolSurf.ChartColor = 21;
-            VolSurf.Location(XlChartLocation.xlLocationAsNewSheet, "Volatility Surface" + _wsIndex);
+            VolSurf.Location(XlChartLocation.xlLocationAsNewSheet, "Volatility Surface_" + creationSheetDate);
             _wsIndex++;
         }
     }

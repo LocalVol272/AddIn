@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ExcelAddIn1.PricerObjects
 {
-    class ApiRequest : HttpRequest, IYahooRequest,IAuthentification
+    public class ApiRequest : HttpRequest, IYahooRequest,IAuthentification
     {
         protected Token token;
         private YahooRequest request;

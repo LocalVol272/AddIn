@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ExcelAddIn1.PricerObjects
 {
-    class DataLoader
+    public class DataLoader
     {
         public ApiRequest _request;
         protected HttpsRequest request;

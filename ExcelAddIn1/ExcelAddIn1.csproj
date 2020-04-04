@@ -200,6 +200,7 @@
   -->
   <ItemGroup>
     <Compile Include="GridView.cs" />
+    <Compile Include="Parameters.cs" />
     <Compile Include="PricerObjects\Authentification.cs" />
     <Compile Include="PricerObjects\DataLoader.cs" />
     <Compile Include="PricerObjects\DataloaderErrors.cs" />
@@ -212,6 +213,7 @@
     <Compile Include="PricerObjects\Security.cs" />
     <Compile Include="PricerObjects\Stock.cs" />
     <Compile Include="PricerObjects\YahooCloud.cs" />
+    <Compile Include="PriceView.cs" />
     <Compile Include="PricingCalculation\BlackScholes.cs" />
     <Compile Include="PricingCalculation\CubicSplines.cs" />
     <Compile Include="PricingCalculation\Grid.cs" />
@@ -220,6 +222,8 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SecureWorksheet.cs" />
+    <Compile Include="VolatilyCalculation.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -232,6 +236,7 @@
     <EmbeddedResource Include="Ribbon1.resx">
       <DependentUpon>Ribbon1.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="ExcelAddIn1_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -270,7 +275,6 @@
   <PropertyGroup>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
-
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Include additional build rules for an Office application add-in. -->

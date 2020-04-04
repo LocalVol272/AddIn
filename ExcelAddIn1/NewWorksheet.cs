@@ -7,13 +7,12 @@ namespace ExcelAddIn1
     public class NewWorksheet
     {
         private static Worksheet _newWorksheet;
-        private static string _creationSheetDate;
 
-        public static void Creation(Worksheet newWorksheet, string creationSheetDate)
+        public static void Creation(Worksheet newWorksheet)
         {
             _newWorksheet = newWorksheet;
-            _creationSheetDate = creationSheetDate;
-            var nameSheet = "LocalVolatilityWS_" + _creationSheetDate.Replace(":", "_");
+            string creationSheetDate = DateTime.Now.ToString("HH:mm:ss");
+            var nameSheet = "LocalVolatilityWS_" + creationSheetDate.Replace(":", "_");
             try
             {
                 _newWorksheet.Name = nameSheet;
