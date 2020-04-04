@@ -126,7 +126,7 @@ namespace ExcelAddIn1.PricingCalculation
                     dT[k, t] = PolynomialDerivative(coefs_fixedK, listT[t], 1);
   
                     dK[k, t] = PolynomialDerivative(coefs_fixedT, listK[k], 1);
-                    dK2[k, t] = PolynomialDerivative(coefs_fixedK, listK[k], 2);
+                    dK2[k, t] = PolynomialDerivative(coefs_fixedT, listK[k], 2);
                 }
             }
 
