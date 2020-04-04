@@ -6,4 +6,3 @@
         public const string UnsecuredRequest = "Https:// Required";
     }
 }
-

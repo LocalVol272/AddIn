@@ -109,7 +109,7 @@ namespace ExcelAddIn1
             //affichage de la surface de vol
             var VolSurfShape = _worksheet.Shapes.AddChart2(Width: 600, Height: 300);
             var VolSurf = VolSurfShape.Chart;
-            string creationSheetDate = DateTime.Now.ToString("HH:mm:ss").Replace(":", "_");
+            var creationSheetDate = DateTime.Now.ToString("HH:mm:ss").Replace(":", "_");
             VolSurf.HasTitle = true;
             VolSurf.ChartTitle.Text = title;
             Range _cell1 = _worksheet.Cells[rowIndexDataSource, columnIndexDataSource];

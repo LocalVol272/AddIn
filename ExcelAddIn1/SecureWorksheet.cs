@@ -1,6 +1,5 @@
 using System;
 using System.Windows.Forms;
-using ExcelAddIn1.PricerObjects;
 
 namespace ExcelAddIn1
 {
@@ -36,6 +35,7 @@ namespace ExcelAddIn1
                         return true;
                 }
             }
+
             return false;
         }
     }

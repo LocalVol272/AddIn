@@ -153,7 +153,7 @@ namespace ExcelAddIn1.PricingCalculation
             var model = new PolynomialRegressionModel(x_regress, y_regress, 2);
             model.Fit();
 
-            List<double> coeff = model.Parameters.Select(param => param.Value).ToList();
+            var coeff = model.Parameters.Select(param => param.Value).ToList();
             coeff.Reverse();
             return coeff;
         }

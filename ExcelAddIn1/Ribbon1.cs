@@ -10,7 +10,7 @@ namespace ExcelAddIn1
 {
     public partial class Ribbon1
     {
-        private Parameters _details ;
+        private Parameters _details;
         private bool _step4done;
         private bool _step5done;
 
@@ -26,7 +26,11 @@ namespace ExcelAddIn1
                 comboBox3.Items.Add(item);
             }
 
-            var tickers = new List<string> {"AAPL", "AMZN", "FB", "GOOG","CSCO","EBAY","GM","INTC","KRFT","MSFT","NVDA","ORCL","SBUX","TSLA","YHOO"};
+            var tickers = new List<string>
+            {
+                "AAPL", "AMZN", "FB", "GOOG", "CSCO", "EBAY", "GM", "INTC", "KRFT", "MSFT", "NVDA", "ORCL", "SBUX",
+                "TSLA", "YHOO"
+            };
 
             foreach (var value in tickers)
             {
@@ -58,7 +62,6 @@ namespace ExcelAddIn1
         {
             Globals.ThisAddIn.Application.ScreenUpdating = false;
             if (_step4done)
-            {
                 try
                 {
                     VolatilyCalculation.VolatilyMain(_details);
@@ -68,11 +71,8 @@ namespace ExcelAddIn1
                 {
                     MessageBox.Show(ex.Message);
                 }
-            }
             else
-            {
                 MessageBox.Show("Vous devez d'abord récupérer les prix des options en cliquant sur 'Import Data''");
-            }
 
             Globals.ThisAddIn.Application.ScreenUpdating = true;
         }
@@ -98,7 +98,7 @@ namespace ExcelAddIn1
             _details.spot = action.GetLastPrice();
             _details.newWorksheet.Range["B2"].Value = _details.spot;
 
-            var res = PriceView.GetOptions(ticker,comboBox3.Text);
+            var res = PriceView.GetOptions(ticker, comboBox3.Text);
             var strikes = PriceView.CompteGridDetails(res, ticker, out var maturities, out _details.optionMarketPrice);
             _details.strikes = strikes.Select(item => Convert.ToDouble(item)).ToArray();
             _details.tenors = PriceView.MaturitiesFormat(maturities).Select(item => Convert.ToDouble(item)).ToArray();
@@ -109,7 +109,7 @@ namespace ExcelAddIn1
 
             var gv = new GridView(_details.newWorksheet, _details.strikes, _details.tenors);
             gv.DisplayGrid(7, 3, _details.optionMarketPrice);
-     
+
             _details.lastRow = 11 + _details.strikes.Length;
             _step4done = true;
             Globals.ThisAddIn.Application.ScreenUpdating = true;
@@ -119,25 +119,24 @@ namespace ExcelAddIn1
         {
             if (_step5done)
             {
-
                 Globals.ThisAddIn.Application.ScreenUpdating = false;
-            Grid grid = new Grid(_details.VolLocale, _details.tenors, _details.mStrikes);
-            double[,] prices = grid.BSPD(_details.spot, _details.r, _details.VolLocale, _details.type);
+                var grid = new Grid(_details.VolLocale, _details.tenors, _details.mStrikes);
+                var prices = grid.BSPD(_details.spot, _details.r, _details.VolLocale, _details.type);
 
-            _details.lastRow += 3;
-            _details.newWorksheet.Range["B" + _details.lastRow].Value = "Option Price with Local Volatility";
-            _details.newWorksheet.Range["B" + _details.lastRow].Font.FontStyle = "Bold";
-            _details.newWorksheet.Range["B" + _details.lastRow].Font.Underline = true;
+                _details.lastRow += 3;
+                _details.newWorksheet.Range["B" + _details.lastRow].Value = "Option Price with Local Volatility";
+                _details.newWorksheet.Range["B" + _details.lastRow].Font.FontStyle = "Bold";
+                _details.newWorksheet.Range["B" + _details.lastRow].Font.Underline = true;
 
-            var gv = new GridView(_details.newWorksheet, _details.mStrikes, _details.tenors);
-            gv.DisplayGrid(_details.lastRow + 1, 3, prices);
+                var gv = new GridView(_details.newWorksheet, _details.mStrikes, _details.tenors);
+                gv.DisplayGrid(_details.lastRow + 1, 3, prices);
 
-            Globals.ThisAddIn.Application.ScreenUpdating = true;
-        }
-        else
-        {
-            MessageBox.Show("Veuillez calculer la volatlité locale avant de pricer.");
-        }
+                Globals.ThisAddIn.Application.ScreenUpdating = true;
+            }
+            else
+            {
+                MessageBox.Show("Veuillez calculer la volatlité locale avant de pricer.");
+            }
         }
 
         private void editBox1_TextChanged_1(object sender, RibbonControlEventArgs e)

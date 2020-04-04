@@ -1,6 +1,5 @@
 using System;
 using ExcelAddIn1.PricingCalculation;
-using Microsoft.Office.Interop.Excel;
 
 namespace ExcelAddIn1
 {
@@ -15,7 +14,7 @@ namespace ExcelAddIn1
                 details.newWorksheet.Range["B" + details.lastRow].Font.FontStyle = "Bold";
                 details.newWorksheet.Range["B" + details.lastRow].Font.Underline = true;
                 ApplyMoneyness(details);
-                Grid grid = new Grid(details.mOptionMarketPrice, details.tenors, details.mStrikes);
+                var grid = new Grid(details.mOptionMarketPrice, details.tenors, details.mStrikes);
                 details.VolLocale = grid.LocalVolatility(details.mOptionMarketPrice, details.mStrikes, details.tenors,
                     details.r);
                 var gv = new GridView(details.newWorksheet, details.mStrikes, details.tenors);
@@ -37,34 +36,23 @@ namespace ExcelAddIn1
             double borneSup;
             int indexBorneSup;
             borneInf = details.spot * (1 - details.moneyness);
-            if (borneInf < 0)
-            {
-                borneInf = 0;
-            }
+            if (borneInf < 0) borneInf = 0;
             borneSup = details.spot * (1 + details.moneyness);
-            int i = 0;
-            while (details.strikes[i] <= borneInf)
-            {
-                i++;
-            }
+            var i = 0;
+            while (details.strikes[i] <= borneInf) i++;
             borneInf = details.strikes[i];
             indexBorneInf = i;
-            int j = details.strikes.Length - 1;
-            while (details.strikes[j] >= borneSup)
-            {
-                j--;
-            }
+            var j = details.strikes.Length - 1;
+            while (details.strikes[j] >= borneSup) j--;
             borneSup = details.strikes[j];
             indexBorneSup = j;
             details.mStrikes = new double[j - i + 1];
             details.mOptionMarketPrice = new double[j - i + 1, details.tenors.Length];
-            for (int k = indexBorneInf; k <= indexBorneSup; k++)
+            for (var k = indexBorneInf; k <= indexBorneSup; k++)
             {
                 details.mStrikes[k - indexBorneInf] = details.strikes[k];
-                for (int t = 0; t < details.tenors.Length; t++)
-                {
+                for (var t = 0; t < details.tenors.Length; t++)
                     details.mOptionMarketPrice[k - indexBorneInf, t] = details.optionMarketPrice[k, t];
-                }
             }
         }
     }

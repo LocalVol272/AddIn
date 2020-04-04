@@ -12,7 +12,7 @@ namespace ExcelAddIn1
         {
             //creation d'une nouvelle WS
             _newWorksheet = newWorksheet;
-            string creationSheetDate = DateTime.Now.ToString("HH:mm:ss");
+            var creationSheetDate = DateTime.Now.ToString("HH:mm:ss");
             var nameSheet = "LocalVolatilityWS_" + creationSheetDate.Replace(":", "_");
             try
             {
@@ -22,7 +22,7 @@ namespace ExcelAddIn1
             {
                 MessageBox.Show(exception.Message + " Merci d'essayer à nouveau.");
             }
-            
+
             VisualizeData();
         }
 

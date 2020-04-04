@@ -11,14 +11,11 @@ namespace ExcelAddIn1.PricerObjects
             var fileName = "\\ExcelAddIn1\\TICKER.txt";
             var projectDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
             var fileDir = projectDir + fileName;
-            List<string> ticker = new List<string>();
+            var ticker = new List<string>();
 
-            string[] lines = System.IO.File.ReadAllLines(fileDir);
+            var lines = File.ReadAllLines(fileDir);
 
-            foreach (string line in lines)
-            {
-                ticker.Add(line);
-            }
+            foreach (var line in lines) ticker.Add(line);
 
             return ticker;
         }
