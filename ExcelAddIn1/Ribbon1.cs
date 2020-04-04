@@ -26,7 +26,7 @@ namespace ExcelAddIn1
                 comboBox3.Items.Add(item);
             }
 
-            var tickers = new List<string> {"AAPL", "AMZN", "FB", "GOOG"};
+            var tickers = new List<string> {"AAPL", "AMZN", "FB", "GOOG","CSCO","EBAY","GM","INTC","KRFT","MSFT","NVDA","ORCL","SBUX","TSLA","YHOO"};
 
             foreach (var value in tickers)
             {
