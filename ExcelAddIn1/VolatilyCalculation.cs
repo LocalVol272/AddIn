@@ -1,3 +1,4 @@
+using System;
 using ExcelAddIn1.PricingCalculation;
 using Microsoft.Office.Interop.Excel;
 
@@ -7,16 +8,26 @@ namespace ExcelAddIn1
     {
         public static void VolatilyMain(Parameters details)
         {
-            details.newWorksheet.Range["B" + details.lastRow].Value = "Volatility Surface";
-            details.newWorksheet.Range["B" + details.lastRow].Font.FontStyle = "Bold";
-            details.newWorksheet.Range["B" + details.lastRow].Font.Underline = true;
-            applyMoneyness(details);
-            Grid grid = new Grid(details.mOptionMarketPrice, details.tenors, details.mStrikes);
-            details.VolLocale = grid.LocalVolatility(details.mOptionMarketPrice, details.mStrikes, details.tenors, details.r);
-            var gv = new GridView(details.newWorksheet, details.mStrikes, details.tenors);
-            gv.DisplayGrid(details.lastRow + 1, 3, details.VolLocale);
-            gv.DisplayVolSurface("Volatility Surface", details.lastRow + 2, 4);
-            details.lastRow += details.mStrikes.Length + 2;
+            try
+            {
+
+
+                details.newWorksheet.Range["B" + details.lastRow].Value = "Volatility Surface";
+                details.newWorksheet.Range["B" + details.lastRow].Font.FontStyle = "Bold";
+                details.newWorksheet.Range["B" + details.lastRow].Font.Underline = true;
+                applyMoneyness(details);
+                Grid grid = new Grid(details.mOptionMarketPrice, details.tenors, details.mStrikes);
+                details.VolLocale = grid.LocalVolatility(details.mOptionMarketPrice, details.mStrikes, details.tenors,
+                    details.r);
+                var gv = new GridView(details.newWorksheet, details.mStrikes, details.tenors);
+                gv.DisplayGrid(details.lastRow + 1, 3, details.VolLocale);
+                gv.DisplayVolSurface("Volatility Surface", details.lastRow + 2, 4);
+                details.lastRow += details.mStrikes.Length + 2;
+            }
+            catch (Exception ex)
+            {
+                // ignored
+            }
         }
 
         private static void applyMoneyness(Parameters details)

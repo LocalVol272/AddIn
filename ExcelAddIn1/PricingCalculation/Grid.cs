@@ -71,8 +71,6 @@ namespace ExcelAddIn1.PricingCalculation
             var dK = new double[nrows, ncols];
             var dT = new double[nrows, ncols];
             var dK2 = new double[nrows, ncols];
-            var coefs_fixedK = new double[] { };
-            var coefs_fixedT = new double[]{};
 
             for (var t = 0; t < ncols; t++)
             {
@@ -94,14 +92,8 @@ namespace ExcelAddIn1.PricingCalculation
                 //Then build cubic spline projection :
 
                 //CubicSpline splineP_fixedT = new CubicSpline(tempK, tabP_fixedT);
-                try
-                {
-                    coefs_fixedT = Polyfit(tempK, tabP_fixedT, 3);
-                }
-                catch (Exception exception)
-                {
-                    MessageBox.Show("Veuillez modifier les parametres de moneyness, cela ne peut pas être fitter");
-                }
+                var coefs_fixedT = Polyfit(tempK, tabP_fixedT, 3);
+                
 
                 for (var k = 0; k < nrows; k++)
                 {
@@ -122,16 +114,11 @@ namespace ExcelAddIn1.PricingCalculation
 
                     //Then build cubic spline projection :
                     //CubicSpline splineP_fixedK = new CubicSpline(tempT, tabP_fixedK);
-                    try
-                    {
-                        coefs_fixedK = Polyfit(tempT, tabP_fixedK, 3);
-                    }
-                    catch (Exception exception)
-                    {
-                        MessageBox.Show("Veuillez modifier les parametres de moneyness, cela ne peut pas être fitter.");
-                    }
 
-                    //Finally collect sensitivities
+                        var coefs_fixedK = Polyfit(tempT, tabP_fixedK, 3);
+
+
+                        //Finally collect sensitivities
                     //dT[k, t] = splineP_fixedK.SpotEstimateSlope(listT[t]);
                     //dK[k, t] = splineP_fixedT.SpotEstimateSlope(listK[k]);
                     //dK2[k, t] = splineP_fixedT.SpotEstimateSecondDeriv(listK[k]);
@@ -152,7 +139,17 @@ namespace ExcelAddIn1.PricingCalculation
 
         public double[,] LocalVolatility(double[,] price, double[] listK, double[] listT, double r)
         {
-            var sensiDict = Sensitivities(price, listK, listT);
+            Dictionary<string, double[,]> sensiDict = new Dictionary<string, double[,]>();
+            try
+            {
+                sensiDict = Sensitivities(price, listK, listT);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Veuillez modifier les parametres de moneyness, cela ne peut pas être fitter.");
+                throw;
+            }
+
             var nrows = listK.Length;
             var ncols = listT.Length;
 

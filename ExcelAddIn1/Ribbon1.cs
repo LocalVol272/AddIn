@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using ExcelAddIn1.PricerObjects;
 using ExcelAddIn1.PricingCalculation;
 using Microsoft.Office.Tools.Ribbon;
@@ -10,6 +11,8 @@ namespace ExcelAddIn1
     public partial class Ribbon1
     {
         private Parameters _details ;
+        private bool _step4done;
+        private bool _step5done;
 
         private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
         {
@@ -36,6 +39,8 @@ namespace ExcelAddIn1
         private void button2_Click(object sender, RibbonControlEventArgs e)
         {
             Globals.ThisAddIn.Application.ScreenUpdating = false;
+            _details = new Parameters();
+            _step4done = false;
             CleanRibbon();
             _details.newWorksheet = Globals.ThisAddIn.Application.Worksheets.Add();
             NewWorksheet.Creation(_details.newWorksheet);
@@ -52,7 +57,23 @@ namespace ExcelAddIn1
         private void Price_Click(object sender, RibbonControlEventArgs e)
         {
             Globals.ThisAddIn.Application.ScreenUpdating = false;
-            VolatilyCalculation.VolatilyMain(_details);
+            if (_step4done)
+            {
+                try
+                {
+                    VolatilyCalculation.VolatilyMain(_details);
+                    _step5done = true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Vous devez d'abord récupérer les prix des options en cliquant sur 'Import Data''");
+            }
+
             Globals.ThisAddIn.Application.ScreenUpdating = true;
         }
 
@@ -90,12 +111,16 @@ namespace ExcelAddIn1
             gv.DisplayGrid(7, 3, _details.optionMarketPrice);
      
             _details.lastRow = 11 + _details.strikes.Length;
+            _step4done = true;
             Globals.ThisAddIn.Application.ScreenUpdating = true;
         }
 
         private void button3_Click(object sender, RibbonControlEventArgs e)
         {
-            Globals.ThisAddIn.Application.ScreenUpdating = false;
+            if (_step5done)
+            {
+
+                Globals.ThisAddIn.Application.ScreenUpdating = false;
             Grid grid = new Grid(_details.VolLocale, _details.tenors, _details.mStrikes);
             double[,] prices = grid.BSPD(_details.spot, _details.r, _details.VolLocale, _details.type);
 
@@ -109,17 +134,36 @@ namespace ExcelAddIn1
 
             Globals.ThisAddIn.Application.ScreenUpdating = true;
         }
+        else
+        {
+            MessageBox.Show("Veuillez calculer la volatlité locale avant de pricer.");
+        }
+        }
 
         private void editBox1_TextChanged_1(object sender, RibbonControlEventArgs e)
         {
             var value = editBox1.Text.Replace('.', ',');
-            _details.moneyness = Convert.ToDouble(value);
+            try
+            {
+                _details.moneyness = Convert.ToDouble(value);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Assurez vous de rentrer un nombre.");
+            }
         }
 
         private void editBox2_TextChanged(object sender, RibbonControlEventArgs e)
         {
             var value = editBox1.Text.Replace('.', ',');
-            _details.r = Convert.ToDouble(value);
+            try
+            {
+                _details.r = Convert.ToDouble(value);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Assurez vous de rentrer un nombre.");
+            }
         }
     }
 }

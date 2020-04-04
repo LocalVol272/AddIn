@@ -8,23 +8,22 @@ namespace ExcelAddIn1
 {
     public static class PriceView
     {
-
-        public static Dictionary<string, Dictionary<string, List<Option>>> GetOptions(string ticker,string combobox)
+        public static Dictionary<string, Dictionary<string, List<Option>>> GetOptions(string ticker, string combobox)
         {
-            List<string> TickerList = new List<string>() { ticker };
-            Dictionary<string, object> Params = new Dictionary<string, object>();
-            List<string> DateList = new List<string>() { };
+            var TickerList = new List<string> {ticker};
+            var Params = new Dictionary<string, object>();
+            var DateList = new List<string>();
 
             Params.Add("ProductType", "Option/" + combobox);
             Params.Add("Tickers", TickerList);
             Params.Add("Dates", DateList);
 
-            Dictionary<string, object> Config = new Dictionary<string, object>() { };
+            var Config = new Dictionary<string, object>();
             Config.Add("Token", "Tsk_bbe66f58b6d149f59a9af4eb83bfc7f5");
             Config.Add("Type", "GET");
             Config.Add("Params", Params);
 
-            Options test = new Options(Config);
+            var test = new Options(Config);
             var res = test.GetOptions();
             return res;
         }
@@ -233,23 +232,25 @@ namespace ExcelAddIn1
 
         public static List<double> MaturitiesFormat(List<double> maturities)
         {
-            var newMaturities = new List<double> { };
-            string today = DateTime.Today.ToString("dd-MM-yyyy");
+            var newMaturities = new List<double>();
+            var today = DateTime.Today.ToString("dd-MM-yyyy");
 
             foreach (var mat in maturities)
             {
                 var day = GetNumberDay(mat);
                 newMaturities.Add(day);
             }
+
             return newMaturities;
         }
 
         private static double GetNumberDay(double mat)
         {
-            string today = DateTime.Today.ToString("dd-MM-yyyy");
-            var result = DateTime.ParseExact(mat.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToString("dd-MM-yyyy");
-            TimeSpan diff = Convert.ToDateTime(result) - Convert.ToDateTime(today);
-            double day = (diff.TotalDays) / 365;
+            var today = DateTime.Today.ToString("dd-MM-yyyy");
+            var result = DateTime.ParseExact(mat.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture)
+                .ToString("dd-MM-yyyy");
+            var diff = Convert.ToDateTime(result) - Convert.ToDateTime(today);
+            var day = diff.TotalDays / 365;
             day = Math.Round(day, 2);
             return day;
         }
