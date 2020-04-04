@@ -1,12 +1,17 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using ExcelAddIn1.PricerObjects;
 using ExcelAddIn1.PricingCalculation;
+using Extreme.Mathematics.Calculus.OrdinaryDifferentialEquations;
+using MathNet.Numerics;
+using Microsoft.Office.Core;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Tools.Ribbon;
+using Newtonsoft.Json.Linq;
 
 namespace ExcelAddIn1
 {
@@ -223,7 +228,7 @@ namespace ExcelAddIn1
             return newMaturities;
         }
 
-        private static List<double> CompteGridDetails(Dictionary<string, Dictionary<string, List<Option>>> res, string ticker, out List<double> maturities, out double[,] price)
+        private static List<double> CompteGridDetails(Dictionary<string, Dictionary<string, List<Option>>> res, string ticker, out List<double> maturities, out double[,] priceFinal)
         {
             List<double> strikes = new List<double>();
             maturities = new List<double>();
@@ -251,24 +256,135 @@ namespace ExcelAddIn1
 
             strikes.Sort();
             maturities.Sort();
-
-            price = new double[strikes.Count, maturities.Count];
-            foreach (string key in res[ticker].Keys)
+            var cpt = 0;
+            var actualColumn = 0;
+            List<double> ColumnToRemoveIndex = new List<double>();
+            List<double> ColumnToRemoveDate = new List<double>();
+            List<double> RowToRemoveIndex = new List<double>();
+            List<double> RowToRemoveDate = new List<double>();
+            var price = new double[strikes.Count, maturities.Count];
+            foreach (var key in res[ticker].Keys.Where(key => res[ticker][key] != null))
             {
-                if (res[ticker][key] != null)
+                cpt = 0;
+                for (int i = 0; i < res[ticker][key].Count; i++)
                 {
-                    for (int i = 0; i < res[ticker][key].Count; i++)
+                    actualColumn = i;
+                    double strike = Convert.ToDouble(res[ticker][key][i].strikePrice);
+                    double maturity = Convert.ToDouble(res[ticker][key][i].expirationDate);
+                    int indexStrike = strikes.IndexOf(strike);
+                    int indexMaturity = maturities.IndexOf(maturity);
+   
+                    price[indexStrike, indexMaturity] = Convert.ToDouble(res[ticker][key][i].closingPrice);
+                    if (price[indexStrike, indexMaturity] > 0)
                     {
-                        double strike = Convert.ToDouble(res[ticker][key][i].strikePrice);
-                        double maturity = Convert.ToDouble(res[ticker][key][i].expirationDate);
-                        int indexStrike = strikes.IndexOf(strike);
-                        int indexMaturity = maturities.IndexOf(maturity);
-                        price[indexStrike, indexMaturity] = Convert.ToDouble(res[ticker][key][i].closingPrice);
+                        cpt += 1;
                     }
+                }
+
+                if (cpt < 4)
+                {
+                    double mat = Convert.ToDouble(res[ticker][key][actualColumn].expirationDate);
+                    int indexMaturity = maturities.IndexOf(mat);
+                    ColumnToRemoveIndex.Add(indexMaturity);
+                    ColumnToRemoveDate.Add(mat);
                 }
             }
 
+
+            priceFinal = new double[strikes.Count, maturities.Count- ColumnToRemoveIndex.Count];
+
+
+            DeleteColumns(maturities, priceFinal, price, ColumnToRemoveIndex, ColumnToRemoveIndex);
+            int cptRow = 0;
+            for (int i = 0; i < priceFinal.GetLength(0); i++)
+            {
+                cptRow = 0;
+                for (int j = 0; j < priceFinal.GetLength(1); j++)
+                {
+                    double test = priceFinal[i, j];
+                    if (test > 0)
+                    {
+                        cptRow += 1;
+                    }
+                }
+                if (cptRow < 4)
+                {
+                    foreach (var k in strikes)
+                    {
+                        double strike = k;
+                        int indexStrike = strikes.IndexOf(strike);
+                        if (i == indexStrike)
+                        {
+                            RowToRemoveIndex.Add(indexStrike);
+                            RowToRemoveDate.Add(strike);
+                        }
+                    }
+                }
+            }
+            priceFinal = new double[strikes.Count-RowToRemoveIndex.Count, maturities.Count];
+
+            DeleteRows(strikes, priceFinal, price, RowToRemoveIndex, RowToRemoveDate);
             return strikes;
+        }
+
+        private static void DeleteRows(List<double> strikes, double[,] priceFinal, double[,] price,
+            List<double> rowToRemoveIndex, List<double> rowToRemoveDate)
+        {
+            bool existR = false;
+            for (int i = 1; i < price.GetLength(0); i++)
+            {
+                foreach (var element in rowToRemoveIndex)
+                {
+                    if (i == element)
+                    {
+                        foreach (var k in rowToRemoveDate)
+                        {
+                            if (strikes.IndexOf(k) == i)
+                            {
+                                strikes.Remove(k);
+                                existR = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (existR.Equals(true))
+                    continue;
+
+                for (int j = 1; j < price.GetLength(1); j++)
+                {
+                    priceFinal[i - 1, j - 1] = price[i, j];
+                }
+            }
+        }
+
+        private static void DeleteColumns(List<double> maturities, double[,] priceFinal, double[,] price, List<double> RowToRemoveIndex,
+            List<double> RowToRemoveDate)
+        {
+            for (int i = 1; i < price.GetLength(0); i++)
+            {
+                for (int j = 1; j < price.GetLength(1); j++)
+                {
+                    foreach (var element in RowToRemoveIndex)
+                    {
+                        if (j == element)
+                        {
+                            foreach (var date in RowToRemoveDate)
+                            {
+                                if (j == maturities.IndexOf(date))
+                                {
+                                    maturities.Remove(date);
+                                }
+                            }
+
+                            continue;
+                        }
+                    }
+
+                    priceFinal[i - 1, j - 1] = price[i, j];
+                }
+            }
         }
 
         private Dictionary<string, Dictionary<string, List<Option>>> GetOptions(string ticker)

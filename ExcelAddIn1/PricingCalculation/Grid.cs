@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Factorization;
-
 //To add from NuGet : MathNet
 namespace ExcelAddIn1.PricingCalculation
 {
