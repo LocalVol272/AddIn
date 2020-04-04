@@ -14,7 +14,7 @@ namespace ExcelAddIn1
                 details.newWorksheet.Range["B" + details.lastRow].Value = "Volatility Surface";
                 details.newWorksheet.Range["B" + details.lastRow].Font.FontStyle = "Bold";
                 details.newWorksheet.Range["B" + details.lastRow].Font.Underline = true;
-                applyMoneyness(details);
+                ApplyMoneyness(details);
                 Grid grid = new Grid(details.mOptionMarketPrice, details.tenors, details.mStrikes);
                 details.VolLocale = grid.LocalVolatility(details.mOptionMarketPrice, details.mStrikes, details.tenors,
                     details.r);
@@ -29,7 +29,7 @@ namespace ExcelAddIn1
             }
         }
 
-        private static void applyMoneyness(Parameters details)
+        private static void ApplyMoneyness(Parameters details)
         {
             //application du moneyness, pour ecarter des strikes
             double borneInf;
