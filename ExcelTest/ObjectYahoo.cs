@@ -1,4 +1,5 @@
 ﻿using System;
+using ExcelAddIn1.PricerObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UniTestPricerVolSto

@@ -144,7 +144,7 @@ namespace ExcelAddIn1.PricingCalculation
             {
                 sensiDict = Sensitivities(price, listK, listT);
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 MessageBox.Show("Veuillez modifier les parametres de moneyness, cela ne peut pas être fitter.");
                 throw;

@@ -146,7 +146,7 @@ namespace ExcelAddIn1
             {
                 _details.moneyness = Convert.ToDouble(value);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show("Assurez vous de rentrer un nombre.");
             }
@@ -159,7 +159,7 @@ namespace ExcelAddIn1
             {
                 _details.r = Convert.ToDouble(value);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show("Assurez vous de rentrer un nombre.");
             }

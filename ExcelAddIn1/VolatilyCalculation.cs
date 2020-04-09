@@ -22,7 +22,7 @@ namespace ExcelAddIn1
                 gv.DisplayVolSurface("Volatility Surface", details.lastRow + 2, 4);
                 details.lastRow += details.mStrikes.Length + 2;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // ignored
             }
